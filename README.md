@@ -11,6 +11,9 @@
 
 Check [documentation](/doc) for more detailed information.
 
+- [Design plan](/doc/groupBP_design_plan.pdf)
+- [Overview of todo](/doc/todo.md)
+
 ## Install
 
 ```sh
@@ -37,23 +40,3 @@ Build for production:
 ```sh
 ~/mobilecurling$ dart_frog build
 ```
-
-## Todo
-
-- [ ] Real-time server with basic functionality
-- [ ] Simple Flutter client
-
-### Refactor into containers
-
-- [ ] Real-time node
-- [ ] Game state node
-- [ ] Auth node
-- [ ] Matchmaking node
-
-### Deploy to cloud
-
-- [ ] Using GCloud / DigitalOcean?
-
-### Bonus points
-
-- [ ] Kubernetes orchestration
