@@ -37,6 +37,9 @@ class GameState with _$GameState {
     /// The ID of the player who's turn it is now
     @Default(null) User? playerInTurn,
 
+    /// If the players can slide a stone
+    @Default(false) bool canSlide,
+
     /// The state of the game. It's either started or ended.
     @Default(State.started) State gameState,
   }) = _GameState;

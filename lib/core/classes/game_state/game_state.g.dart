@@ -22,6 +22,7 @@ _$GameStateImpl _$$GameStateImplFromJson(Map<String, dynamic> json) =>
       playerInTurn: json['playerInTurn'] == null
           ? null
           : User.fromJson(json['playerInTurn'] as Map<String, dynamic>),
+      canSlide: json['canSlide'] as bool? ?? false,
       gameState: $enumDecodeNullable(_$StateEnumMap, json['gameState']) ??
           State.started,
     );
@@ -34,6 +35,7 @@ Map<String, dynamic> _$$GameStateImplToJson(_$GameStateImpl instance) =>
       'playerTwo': instance.playerTwo,
       'playerTwoScore': instance.playerTwoScore,
       'playerInTurn': instance.playerInTurn,
+      'canSlide': instance.canSlide,
       'gameState': _$StateEnumMap[instance.gameState]!,
     };
 
