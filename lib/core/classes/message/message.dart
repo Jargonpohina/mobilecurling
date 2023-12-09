@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:mobilecurling/core/classes/lobby/lobby.dart';
 import 'package:mobilecurling/core/classes/slide/slide.dart';
 import 'package:mobilecurling/core/classes/user/user.dart';
 
@@ -12,7 +13,7 @@ enum MessageType {
   slide,
 }
 
-/// The message. It's received from client, and contains the type (either join or slide).
+/// User itself.
 @freezed
 class Message with _$Message {
   const Message._();
@@ -26,6 +27,9 @@ class Message with _$Message {
 
     /// If the type is slide, then the message has the information of sliding the stone
     @Default(null) Slide? slide,
+
+    /// The lobby that this message belongs to
+    @Default(null) Lobby? lobby,
   }) = _Message;
 
   /// From json function

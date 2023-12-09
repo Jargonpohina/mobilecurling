@@ -15,6 +15,9 @@ _$MessageImpl _$$MessageImplFromJson(Map<String, dynamic> json) =>
       slide: json['slide'] == null
           ? null
           : Slide.fromJson(json['slide'] as Map<String, dynamic>),
+      lobby: json['lobby'] == null
+          ? null
+          : Lobby.fromJson(json['lobby'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$MessageImplToJson(_$MessageImpl instance) =>
@@ -22,6 +25,7 @@ Map<String, dynamic> _$$MessageImplToJson(_$MessageImpl instance) =>
       'type': _$MessageTypeEnumMap[instance.type]!,
       'user': instance.user,
       'slide': instance.slide,
+      'lobby': instance.lobby,
     };
 
 const _$MessageTypeEnumMap = {

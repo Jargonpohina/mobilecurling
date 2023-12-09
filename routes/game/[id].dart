@@ -25,8 +25,11 @@ void gameLoop({required String lobbyID, required WebSocketChannel channel}) {
     final index = gameIndex(lobbyID);
     if (index != -1) {
       // If both players have joined the game, let's start it.
-      final Game game = Game(playerOne: games[index].playerOne!, playerTwo: games[index].playerTwo!);
-      print(game); // tää on iha vaa demo
+      if (games[index].playerOne != null && games[index].playerTwo != null) {
+        final Game game = Game(playerOne: games[index].playerOne!, playerTwo: games[index].playerTwo!);
+        print(game); // tää on iha vaa demo
+      }
+
       /// Lets send the game state with freezed as json that has been converted to a string back
       /// to clients.
       channel.sink.add(jsonEncode(games[index].toJson()));
@@ -38,6 +41,7 @@ Future<Response> onRequest(RequestContext context, String id) async {
   final handler = webSocketHandler((channel, protocol) {
     // Here we want to receive the stones that are being thrown.
     channel.stream.listen((message) {
+      print('got message $message');
       // We convert the message from json string to an actual message
       final map = jsonDecode(message as String) as Map<String, Object?>;
       // Now we have the message as a Dart map. Let's convert it into a message class with Freezed.
@@ -55,7 +59,7 @@ Future<Response> onRequest(RequestContext context, String id) async {
               games[index] = games[index].copyWith(playerTwo: messageObj.user);
             } else {
               // The game doesn't exist, so this is the first player creating it. Let's add the game state.
-              games.add(GameState(playerOne: messageObj.user));
+              games.add(GameState(playerOne: messageObj.user, lobby: messageObj.lobby));
               // Let's kickstart the game loop itself now that the game state has been created.
               gameLoop(lobbyID: id, channel: channel);
             }

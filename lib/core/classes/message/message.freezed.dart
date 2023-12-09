@@ -28,6 +28,9 @@ mixin _$Message {
   /// If the type is slide, then the message has the information of sliding the stone
   Slide? get slide => throw _privateConstructorUsedError;
 
+  /// The lobby that this message belongs to
+  Lobby? get lobby => throw _privateConstructorUsedError;
+
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
   $MessageCopyWith<Message> get copyWith => throw _privateConstructorUsedError;
@@ -38,10 +41,11 @@ abstract class $MessageCopyWith<$Res> {
   factory $MessageCopyWith(Message value, $Res Function(Message) then) =
       _$MessageCopyWithImpl<$Res, Message>;
   @useResult
-  $Res call({MessageType type, User? user, Slide? slide});
+  $Res call({MessageType type, User? user, Slide? slide, Lobby? lobby});
 
   $UserCopyWith<$Res>? get user;
   $SlideCopyWith<$Res>? get slide;
+  $LobbyCopyWith<$Res>? get lobby;
 }
 
 /// @nodoc
@@ -60,6 +64,7 @@ class _$MessageCopyWithImpl<$Res, $Val extends Message>
     Object? type = null,
     Object? user = freezed,
     Object? slide = freezed,
+    Object? lobby = freezed,
   }) {
     return _then(_value.copyWith(
       type: null == type
@@ -74,6 +79,10 @@ class _$MessageCopyWithImpl<$Res, $Val extends Message>
           ? _value.slide
           : slide // ignore: cast_nullable_to_non_nullable
               as Slide?,
+      lobby: freezed == lobby
+          ? _value.lobby
+          : lobby // ignore: cast_nullable_to_non_nullable
+              as Lobby?,
     ) as $Val);
   }
 
@@ -100,6 +109,18 @@ class _$MessageCopyWithImpl<$Res, $Val extends Message>
       return _then(_value.copyWith(slide: value) as $Val);
     });
   }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $LobbyCopyWith<$Res>? get lobby {
+    if (_value.lobby == null) {
+      return null;
+    }
+
+    return $LobbyCopyWith<$Res>(_value.lobby!, (value) {
+      return _then(_value.copyWith(lobby: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -109,12 +130,14 @@ abstract class _$$MessageImplCopyWith<$Res> implements $MessageCopyWith<$Res> {
       __$$MessageImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({MessageType type, User? user, Slide? slide});
+  $Res call({MessageType type, User? user, Slide? slide, Lobby? lobby});
 
   @override
   $UserCopyWith<$Res>? get user;
   @override
   $SlideCopyWith<$Res>? get slide;
+  @override
+  $LobbyCopyWith<$Res>? get lobby;
 }
 
 /// @nodoc
@@ -131,6 +154,7 @@ class __$$MessageImplCopyWithImpl<$Res>
     Object? type = null,
     Object? user = freezed,
     Object? slide = freezed,
+    Object? lobby = freezed,
   }) {
     return _then(_$MessageImpl(
       type: null == type
@@ -145,6 +169,10 @@ class __$$MessageImplCopyWithImpl<$Res>
           ? _value.slide
           : slide // ignore: cast_nullable_to_non_nullable
               as Slide?,
+      lobby: freezed == lobby
+          ? _value.lobby
+          : lobby // ignore: cast_nullable_to_non_nullable
+              as Lobby?,
     ));
   }
 }
@@ -152,7 +180,11 @@ class __$$MessageImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$MessageImpl extends _Message {
-  const _$MessageImpl({required this.type, this.user = null, this.slide = null})
+  const _$MessageImpl(
+      {required this.type,
+      this.user = null,
+      this.slide = null,
+      this.lobby = null})
       : super._();
 
   factory _$MessageImpl.fromJson(Map<String, dynamic> json) =>
@@ -171,9 +203,14 @@ class _$MessageImpl extends _Message {
   @JsonKey()
   final Slide? slide;
 
+  /// The lobby that this message belongs to
+  @override
+  @JsonKey()
+  final Lobby? lobby;
+
   @override
   String toString() {
-    return 'Message(type: $type, user: $user, slide: $slide)';
+    return 'Message(type: $type, user: $user, slide: $slide, lobby: $lobby)';
   }
 
   @override
@@ -183,12 +220,13 @@ class _$MessageImpl extends _Message {
             other is _$MessageImpl &&
             (identical(other.type, type) || other.type == type) &&
             (identical(other.user, user) || other.user == user) &&
-            (identical(other.slide, slide) || other.slide == slide));
+            (identical(other.slide, slide) || other.slide == slide) &&
+            (identical(other.lobby, lobby) || other.lobby == lobby));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, type, user, slide);
+  int get hashCode => Object.hash(runtimeType, type, user, slide, lobby);
 
   @JsonKey(ignore: true)
   @override
@@ -208,7 +246,8 @@ abstract class _Message extends Message {
   const factory _Message(
       {required final MessageType type,
       final User? user,
-      final Slide? slide}) = _$MessageImpl;
+      final Slide? slide,
+      final Lobby? lobby}) = _$MessageImpl;
   const _Message._() : super._();
 
   factory _Message.fromJson(Map<String, dynamic> json) = _$MessageImpl.fromJson;
@@ -223,6 +262,10 @@ abstract class _Message extends Message {
 
   /// If the type is slide, then the message has the information of sliding the stone
   Slide? get slide;
+  @override
+
+  /// The lobby that this message belongs to
+  Lobby? get lobby;
   @override
   @JsonKey(ignore: true)
   _$$MessageImplCopyWith<_$MessageImpl> get copyWith =>
