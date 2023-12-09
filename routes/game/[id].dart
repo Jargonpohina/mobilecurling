@@ -4,6 +4,7 @@ import 'package:dart_frog/dart_frog.dart';
 import 'package:dart_frog_web_socket/dart_frog_web_socket.dart';
 import 'package:mobilecurling/core/classes/game_state/game_state.dart';
 import 'package:mobilecurling/core/classes/message/message.dart';
+import 'package:mobilecurling/game.dart';
 
 import '../../main.dart';
 
@@ -23,6 +24,9 @@ void gameLoop({required String lobbyID, required WebSocketChannel channel}) {
     // Let's send the game state to clients.
     final index = gameIndex(lobbyID);
     if (index != -1) {
+      // If both players have joined the game, let's start it.
+      final Game game = Game(playerOne: games[index].playerOne!, playerTwo: games[index].playerTwo!);
+      print(game); // tää on iha vaa demo
       /// Lets send the game state with freezed as json that has been converted to a string back
       /// to clients.
       channel.sink.add(jsonEncode(games[index].toJson()));

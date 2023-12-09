@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:mobilecurling/components/stone.dart';
+import 'package:mobilecurling/core/classes/user/user.dart';
 
 /// Game tick logic implementation
 class Game {
@@ -9,13 +10,12 @@ class Game {
   List<String> users = []; // nämä pitää repiä lobbyltä
 
   /// Creating the game instance
-  Game() {
-    initUsers();
+  Game({required User playerOne, required User playerTwo}) {
+    initUsers(playerOne: playerOne, playerTwo: playerTwo);
     initStones();
 
     // start the tick system
-    _timer =
-        Timer.periodic(Duration(milliseconds: frameDuration.toInt()), _update);
+    _timer = Timer.periodic(Duration(milliseconds: frameDuration.toInt()), _update);
   }
 
   // Tick system for the game:
@@ -28,17 +28,15 @@ class Game {
 
   void _update(Timer timer) {
     final DateTime currentTime = DateTime.now();
-    final double deltaTime =
-        currentTime.difference(_lastFrameTime).inMilliseconds / 1000.0;
+    final double deltaTime = currentTime.difference(_lastFrameTime).inMilliseconds / 1000.0;
 
     update(deltaTime);
 
     _lastFrameTime = currentTime;
   }
 
-  void initUsers() {
-    users.add("Sami");
-    users.add("Beni");
+  void initUsers({required User playerOne, required User playerTwo}) {
+    users.addAll([playerOne.username, playerTwo.username]);
   }
 
   void initStones() {
