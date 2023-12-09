@@ -1,5 +1,5 @@
-import 'package:uuid/uuid.dart';
 import 'package:mobilecurling/core/classes/user/user.dart';
+import 'package:uuid/uuid.dart';
 
 /// Curling stone object
 class Stone {
