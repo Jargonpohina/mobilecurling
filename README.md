@@ -1,4 +1,4 @@
-# Mobile curling
+# Mobile Curling Real-Time Server
 
 [![style: very good analysis][very_good_analysis_badge]][very_good_analysis_link]
 [![License: MIT][license_badge]][license_link]
@@ -9,8 +9,18 @@
 [very_good_analysis_badge]: https://img.shields.io/badge/style-very_good_analysis-B22C89.svg
 [very_good_analysis_link]: https://pub.dev/packages/very_good_analysis
 
-This will be the real-time server node of the project. Also works as the primary documentation node
+This will be the real-time server node of the project. 
+Also works as the primary documentation node
 regarding the course.
+
+## Components of the application
+
+- [Client](https://github.com/Jargonpohina/mobilecurling-client)
+- [Auth node](https://github.com/Jargonpohina/mobilecurling-auth)
+- Game state node (Coming soon)
+- Matchmaking node (Coming soon)
+
+## Documentation
 
 Check [documentation](/doc) for more detailed information.
 
