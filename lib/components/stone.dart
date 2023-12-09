@@ -1,4 +1,5 @@
 import 'package:uuid/uuid.dart';
+import 'package:mobilecurling/core/classes/user/user.dart';
 
 /// Curling stone object
 class Stone {
@@ -9,7 +10,7 @@ class Stone {
   final String? id;
   double? x;
   double? y;
-  String? user;
+  User? user;
   static const double radius = 14.53;
   static const double mass = 19.96;
 

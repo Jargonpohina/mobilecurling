@@ -7,7 +7,7 @@ class Game {
   /// List for the stones in the game
   List<Stone> stones = [];
   // List for the users in the game
-  List<String> users = []; // nämä pitää repiä lobbyltä
+  List<User> users = []; // nämä pitää repiä lobbyltä
 
   /// Creating the game instance
   Game({required User playerOne, required User playerTwo}) {
@@ -15,7 +15,8 @@ class Game {
     initStones();
 
     // start the tick system
-    _timer = Timer.periodic(Duration(milliseconds: frameDuration.toInt()), _update);
+    _timer =
+        Timer.periodic(Duration(milliseconds: frameDuration.toInt()), _update);
   }
 
   // Tick system for the game:
@@ -28,7 +29,8 @@ class Game {
 
   void _update(Timer timer) {
     final DateTime currentTime = DateTime.now();
-    final double deltaTime = currentTime.difference(_lastFrameTime).inMilliseconds / 1000.0;
+    final double deltaTime =
+        currentTime.difference(_lastFrameTime).inMilliseconds / 1000.0;
 
     update(deltaTime);
 
@@ -36,11 +38,11 @@ class Game {
   }
 
   void initUsers({required User playerOne, required User playerTwo}) {
-    users.addAll([playerOne.username, playerTwo.username]);
+    users.addAll([playerOne, playerTwo]);
   }
 
   void initStones() {
-    for (String user in users) {
+    for (User user in users) {
       for (int i = 0; i < 4; i++) {
         // starting point is 54.864m horizontal and 2.5m vertical
         stones.add(Stone(x: 548.64, y: 250, user: user));
