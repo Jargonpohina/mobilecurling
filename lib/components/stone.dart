@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:mobilecurling/core/classes/user/user.dart';
 import 'package:uuid/uuid.dart';
 
@@ -14,11 +15,7 @@ class Stone {
   static const double radius = 14.53;
   static const double mass = 19.96;
 
-  void moveTo(double dx, double dy) {
-    x = dx;
-    y = dy;
-  }
-
+  /// helper function to check if colliding with another stone
   bool isCollidingWith(Stone otherStone) {
     double distanceSquared = (x! - otherStone.x!) * (x! - otherStone.x!) +
         (y! - otherStone.y!) * (y! - otherStone.y!);
@@ -26,5 +23,36 @@ class Stone {
     return distanceSquared < minDistanceSquared;
   }
 
-  void calcNextCoordinate(double angle, double speed) {}
+  void slide(double angle, double speed) {
+    // Laske X- ja Y-suuntaiset nopeudet kulman ja alkunopeuden perusteella
+    // Lasketaan vain jarrutusta.
+    // Kulmien nopeuksien jälkeen laske kitkan vaikutus X- ja Y-nopeuksiin ajan
+    // funktiona.
+    double radians = angle * (pi / 180);
+
+    // Nopeus x-suunnassa
+    double speedX = speed * cos(radians);
+    // Nopeus y-suunnassa
+    double speedY = speed * sin(radians);
+
+    // Drags
+    double dragX = 0.5 * 0.02 * pow(speedX, 2);
+    double dragY = 0.5 * 0.02 * pow(speedY, 2);
+
+    // Speed reductions based on drag and mass
+    speedX -= dragX / mass;
+    speedY -= dragY / mass;
+
+    if (speedX.abs() < 0.01) {
+      speedX = 0.0;
+    }
+
+    if (speedY.abs() < 0.01) {
+      speedY = 0.0;
+    }
+
+    // new positions of coordinates
+    x = x! + speedX;
+    y = y! + speedY;
+  }
 }
