@@ -44,7 +44,8 @@ class Game {
   void initStones() {
     for (String user in users) {
       for (int i = 0; i < 4; i++) {
-        stones.add(Stone(x: 0, y: 0, user: user));
+        // starting point is 54.864m horizontal and 2.5m vertical
+        stones.add(Stone(x: 548.64, y: 250, user: user));
       }
     }
   }

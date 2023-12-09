@@ -24,4 +24,6 @@ class Stone {
     double minDistanceSquared = (2 * radius) * (2 * radius);
     return distanceSquared < minDistanceSquared;
   }
+
+  void calcNextCoordinate(double angle, double speed) {}
 }
