@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'game.dart';
+import 'package:mobilecurling/game.dart';
 
 void main() {
   final game = Game();
