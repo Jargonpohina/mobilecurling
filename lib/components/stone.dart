@@ -43,12 +43,12 @@ class Stone {
     double speedY = speed * sin(radians);
 
     // Drags. FIXME
-    double dragX = 0.5 * 0.02 * pow(speedX, 2) * (deltaTime * 100);
-    double dragY = 0.5 * 0.02 * pow(speedY, 2) * (deltaTime * 100);
+    double dragX = 0.5 * 0.02 * pow(speedX, 2) / mass;
+    double dragY = 0.5 * 0.02 * pow(speedY, 2) / mass;
 
     // Speed reductions based on drag and mass
-    speedX -= dragX / mass;
-    speedY -= dragY / mass;
+    speedX -= dragX;
+    speedY -= dragY;
 
     if (speedX.abs() < 0.01) {
       speedX = 0.0;
