@@ -1,4 +1,5 @@
 import 'dart:async';
+// import 'dart:io';
 import 'package:mobilecurling/components/stone.dart';
 import 'package:mobilecurling/core/shared_classes/user/user.dart';
 
@@ -6,7 +7,11 @@ import 'package:mobilecurling/core/shared_classes/user/user.dart';
 class Game {
   /// List for the stones in the game
   List<Stone> stones = [];
-  // List for the users in the game
+
+  /// List for the active stones in the game
+  List<Stone> activeStones = [];
+
+  /// List for the users in the game
   List<User> users = []; // nämä pitää repiä lobbyltä
 
   /// Creating the game instance
@@ -15,7 +20,8 @@ class Game {
     initStones();
 
     // start the tick system
-    _timer = Timer.periodic(Duration(milliseconds: frameDuration.toInt()), _update);
+    _timer =
+        Timer.periodic(Duration(milliseconds: frameDuration.toInt()), _update);
   }
 
   // Tick system for the game:
@@ -28,17 +34,20 @@ class Game {
 
   void _update(Timer timer) {
     final DateTime currentTime = DateTime.now();
-    final double deltaTime = currentTime.difference(_lastFrameTime).inMilliseconds / 1000.0;
+    final double deltaTime =
+        currentTime.difference(_lastFrameTime).inMilliseconds / 1000.0;
 
     update(deltaTime);
 
     _lastFrameTime = currentTime;
   }
 
+  /// initialize game with two users
   void initUsers({required User playerOne, required User playerTwo}) {
     users.addAll([playerOne, playerTwo]);
   }
 
+  /// initialize both players with four stones
   void initStones() {
     for (User user in users) {
       for (int i = 0; i < 4; i++) {
@@ -49,11 +58,12 @@ class Game {
 
   /// Updates the game based on ticks
   void update(double deltaTime) {
-    for (final stone in stones) {
-      stone.update(deltaTime);
+    for (final stone in activeStones) {
+      stone.update(deltaTime, activeStones);
     }
   }
 
+  /// helper function to check if game is still running
   bool rollingStones() {
     for (final stone in stones) {
       if (stone.speed > 0) {
@@ -73,9 +83,17 @@ class Game {
 /*
 void main() {
   final test = Game(
-      playerOne: User(username: 'test', password: 'test'),
-      playerTwo: User(username: 'test1', password: 'test2'));
+      playerOne: const User(username: 'test', password: 'test'),
+      playerTwo: const User(username: 'test1', password: 'test2'));
 
-  final kivi = test.stones.first.slide(30, 180);
+  final kivi = test.stones.first;
+  test.activeStones.add(kivi);
+  kivi.slide(30, 180);
+
+  sleep(Duration(seconds: 15));
+
+  final kivi1 = test.stones[7];
+  test.activeStones.add(kivi1);
+  kivi1.slide(30, 180);
 }
 */

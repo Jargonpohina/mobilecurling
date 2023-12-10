@@ -13,14 +13,18 @@ import '../../main.dart';
 
 /// Function that gets the index of the game state based on the ID of the lobby.
 int gameIndex(String lobbyID) {
-  final index = games.indexWhere((element) => element.state.lobby != null ? element.state.lobby!.id == lobbyID : false);
+  final index = games.indexWhere((element) =>
+      element.state.lobby != null ? element.state.lobby!.id == lobbyID : false);
   return index;
 }
 
 /// Reflects the game world into the game state simply by copying the stone data into StoneAPI objects.
 GameState reflectGameWorld({required GameState gameState, required Game game}) {
   return gameState.copyWith(
-    stones: game.stones.map((e) => StoneAPI(x: e.x, y: e.y, started: e.started, id: e.id!, user: e.user)).toList(),
+    stones: game.stones
+        .map((e) => StoneAPI(
+            x: e.x!, y: e.y!, started: e.started, id: e.id!, user: e.user))
+        .toList(),
     canSlide: !game.rollingStones(),
   );
 }
@@ -33,9 +37,12 @@ void gameLoop({required String lobbyID, required WebSocketChannel channel}) {
     final index = gameIndex(lobbyID);
     if (index != -1) {
       // If both players have joined the game, let's reflect the Game object's game world to the Game State that turns it into JSON.
-      if (games[index].state.playerOne != null && games[index].state.playerTwo != null && games[index].game != null) {
+      if (games[index].state.playerOne != null &&
+          games[index].state.playerTwo != null &&
+          games[index].game != null) {
         games[index] = (
-          state: reflectGameWorld(gameState: games[index].state, game: games[index].game!),
+          state: reflectGameWorld(
+              gameState: games[index].state, game: games[index].game!),
           game: games[index].game,
         );
       }
@@ -70,14 +77,20 @@ Future<Response> onRequest(RequestContext context, String id) async {
                       playerTwo: messageObj.user,
                       playerInTurn: messageObj.user,
                     ),
-                game: Game(playerOne: games[index].state.playerOne!, playerTwo: messageObj.user!),
+                game: Game(
+                    playerOne: games[index].state.playerOne!,
+                    playerTwo: messageObj.user!),
               );
               // Already return the current game state back there
               channel.sink.add(jsonEncode(games[index].state.toJson()));
               gameLoop(lobbyID: messageObj.lobby!.id, channel: channel);
             } else {
               // The game doesn't exist, so this is the first player creating it. Let's add the game state.
-              games.add((state: GameState(playerOne: messageObj.user, lobby: messageObj.lobby), game: null));
+              games.add((
+                state: GameState(
+                    playerOne: messageObj.user, lobby: messageObj.lobby),
+                game: null
+              ));
               // Add the game to the main loop to be messaged every 10 milliseconds.
               gameLoop(lobbyID: messageObj.lobby!.id, channel: channel);
             }
@@ -91,12 +104,19 @@ Future<Response> onRequest(RequestContext context, String id) async {
               final game = games[index].game;
               final stones = game!.stones;
               // Search a stone from the game that is this user's stone and that is still in the starting position
-              final selectedStone = stones.firstWhere((element) => (element.user == messageObj.user) && (element.x == 548.64) && (element.y == 250));
-              selectedStone.slide(messageObj.slide!.angle, messageObj.slide!.speed);
+              final selectedStone = stones.firstWhere((element) =>
+                  (element.user == messageObj.user) &&
+                  (element.x == 548.64) &&
+                  (element.y == 250));
+              selectedStone.slide(
+                  messageObj.slide!.angle, messageObj.slide!.speed);
+              game.activeStones.add(selectedStone);
               final state = games[index].state;
               games[index] = (
                 state: games[index].state.copyWith(
-                      playerInTurn: state.playerInTurn == state.playerOne ? state.playerTwo : state.playerOne,
+                      playerInTurn: state.playerInTurn == state.playerOne
+                          ? state.playerTwo
+                          : state.playerOne,
                     ),
                 game: game,
               );

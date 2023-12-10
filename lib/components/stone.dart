@@ -22,9 +22,46 @@ class Stone {
 
   /// helper function to check if colliding with another stone
   bool isCollidingWithStone(Stone otherStone) {
-    double distanceSquared = (x - otherStone.x) * (x - otherStone.x) + (y - otherStone.y) * (y - otherStone.y);
-    double minDistanceSquared = (2 * radius) * (2 * radius);
-    return distanceSquared < minDistanceSquared;
+    final distance = sqrt(pow(x - otherStone.x, 2) + pow(y - otherStone.y, 2));
+    return distance < 2 * radius; // radius + otherStone.radius
+  }
+
+  /// phys function to handle collisions between stones
+  void handleStoneCollision(Stone otherStone) {
+    // print('Two stones collided!');
+
+    /// difference between stones' x-coords
+    final dx = otherStone.x - x;
+    //print('diff x: $dx');
+
+    /// difference between stones' y-coords
+    final dy = otherStone.y - y;
+
+    //print('diff y: $dy');
+
+    /// collision angle based on coord differences
+    final collAngle = atan2(dy, dx);
+    //print('Collision angle: $collAngle');
+
+    final thisSpeed = sqrt(pow(speedX, 2) + pow(speedY, 2));
+    final otherSpeed =
+        sqrt(pow(otherStone.speedX, 2) + pow(otherStone.speedY, 2));
+
+    final thisDirection = atan2(speedY, speedX);
+    final otherDirection = atan2(otherStone.speedY, otherStone.speedX);
+
+    // speeds after collision
+    final thisSpeed1 = otherSpeed;
+    final otherSpeed1 = thisSpeed;
+
+    //print('Speed of the first stone after coll: $thisSpeed1');
+    //print('Speed of the second stone after collision: $otherSpeed1');
+
+    //print('Will slide first stone in angle: ${thisDirection - collAngle}');
+    //print('Will slide other stone in angle: ${otherDirection - collAngle}');
+
+    slide(thisDirection - collAngle, thisSpeed1);
+    otherStone.slide(otherDirection - collAngle, otherSpeed1);
   }
 
   /// helper function to check if colliding with boundary
@@ -44,6 +81,7 @@ class Stone {
     }
   }
 
+  /// initialize the current stone
   void slide(double angle, double speed) {
     this.angle = angle;
     this.speed = speed;
@@ -65,9 +103,12 @@ class Stone {
     }
   }
 
-  void update(double deltaTime) {
+  /// phys engine (SheetPhysX)
+  void update(double deltaTime, List<Stone> activeStones) {
     double dragX;
     double dragY;
+
+    //print('Hello from $id');
 
     if (speedX.abs() > 0) {
       dragX = 0.5 * sheet.dynamicFriction * pow(speedX, 2) / mass;
@@ -91,12 +132,14 @@ class Stone {
       // print("dray: $dragY");
     }
 
+    /*
     if (speedX.abs() > 0) {
       print('SX: $speedX');
     }
     if (speedY.abs() > 0) {
       print('SY: $speedY');
     }
+    */
 
     if (speedX.abs() < 0.05) {
       speedX = 0.0;
@@ -112,6 +155,11 @@ class Stone {
 
     if (speed > 0.0) {
       isCollidingWithBoundary();
+      for (final otherStone in activeStones) {
+        if (otherStone != this && isCollidingWithStone(otherStone)) {
+          handleStoneCollision(otherStone);
+        }
+      }
     }
 
     x = x + speedX;
