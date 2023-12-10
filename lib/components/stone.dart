@@ -5,7 +5,8 @@ import 'package:uuid/uuid.dart';
 /// Curling stone object
 class Stone {
   /// Constructor
-  Stone({required this.x, required this.y, required this.user}) : id = Uuid().v4();
+  Stone({required this.x, required this.y, required this.user})
+      : id = Uuid().v4();
 
   final String? id;
   double? x;
@@ -21,7 +22,8 @@ class Stone {
 
   /// helper function to check if colliding with another stone
   bool isCollidingWith(Stone otherStone) {
-    double distanceSquared = (x! - otherStone.x!) * (x! - otherStone.x!) + (y! - otherStone.y!) * (y! - otherStone.y!);
+    double distanceSquared = (x! - otherStone.x!) * (x! - otherStone.x!) +
+        (y! - otherStone.y!) * (y! - otherStone.y!);
     double minDistanceSquared = (2 * radius) * (2 * radius);
     return distanceSquared < minDistanceSquared;
   }
@@ -36,22 +38,39 @@ class Stone {
       speedX = speed * cos(radians);
       // Nopeus y-suunnassa
       speedY = speed * sin(radians);
+
+      // print('initial speedx $speedX');
+      // print('intiial speedY $speedY');
     }
   }
 
   void update(double deltaTime) {
-    // Laske X- ja Y-suuntaiset nopeudet kulman ja alkunopeuden perusteella
-    // Lasketaan vain jarrutusta.
-    // Kulmien nopeuksien jälkeen laske kitkan vaikutus X- ja Y-nopeuksiin ajan
-    // funktiona.
+    double dragX;
+    double dragY;
 
-    // Drags. FIXME
-    double dragX = 0.5 * 0.02 * pow(speedX, 2);
-    double dragY = 0.5 * 0.02 * pow(speedY, 2);
+    if (speedX > 0) {
+      dragX = 0.5 * 0.02 * pow(speedX, 2) / mass;
+      if (dragX < 0.1) dragX = 0.1; // workaround to make the simulation end
+      speedX -= dragX;
+      // print("drax: $dragX");
+    }
 
-    // Speed reductions based on drag and mass
-    speedX -= dragX;
-    speedY -= dragY;
+    if (speedY > 0) {
+      dragY = 0.5 * 0.02 * pow(speedY, 2) / mass;
+      if (dragY < 0.1) dragY = 0.1; // workaround to make the simulation end
+      speedY -= dragY;
+      // print("dray: $dragY");
+    }
+
+    // debug:
+    /*
+    if (speedX > 0) {
+      print('SX: $speedX');
+    }
+    if (speedY > 0) {
+      print('SY: $speedY');
+    }
+    */
 
     if (speedX.abs() < 1) {
       speedX = 0.0;
@@ -63,6 +82,7 @@ class Stone {
 
     if (speedX == 0.0 && speedY == 0.0) {
       speed = 0.0;
+      started = false;
     }
 
     // TODO: Laske uusien koordinaattien pysyminen koordinaatistossa

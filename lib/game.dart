@@ -71,3 +71,16 @@ class Game {
     _timer.cancel();
   }
 }
+
+// Debugger:
+/*
+void main() {
+  final test = Game(
+      playerOne: User(username: 'test', password: 'test'),
+      playerTwo: User(username: 'test1', password: 'test2'));
+
+  final kivi = test.stones.first;
+
+  kivi.slide(0, 180);
+}
+*/
