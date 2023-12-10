@@ -18,6 +18,8 @@ class Stone {
   double speed = 0.0;
   double speedX = 0.0;
   double speedY = 0.0;
+  bool stoppedX = false;
+  bool stoppedY = false;
 
   /// helper function to check if colliding with another stone
   bool isCollidingWith(Stone otherStone) {
@@ -40,11 +42,11 @@ class Stone {
     double radians = angle * (pi / 180);
 
     // Nopeus x-suunnassa
-    if (speedX == 0.0) {
+    if (speedX == 0.0 && !stoppedX) {
       speedX = speed * cos(radians);
     }
     // Nopeus y-suunnassa
-    if (this.speedY == 0.0) {
+    if (speedY == 0.0 && !stoppedY) {
       speedY = speed * sin(radians);
     }
 
@@ -58,10 +60,12 @@ class Stone {
 
     if (speedX.abs() < 0.01) {
       speedX = 0.0;
+      stoppedX = true;
     }
 
     if (speedY.abs() < 0.01) {
       speedY = 0.0;
+      stoppedY = true;
     }
 
     if (speedX == 0.0 && speedY == 0.0) {
