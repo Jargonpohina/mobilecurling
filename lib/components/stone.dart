@@ -113,11 +113,11 @@ class Stone {
       speed = 0.0;
     }
 
-    x = x + speedX;
-    y = y + speedY;
-
     if (speed > 0.0) {
       isCollidingWithBoundary();
     }
+
+    x = x + speedX;
+    y = y + speedY;
   }
 }
