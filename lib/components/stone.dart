@@ -101,11 +101,11 @@ class Stone {
     }
     */
 
-    if (speedX.abs() < 1) {
+    if (speedX.abs() < 0.1) {
       speedX = 0.0;
     }
 
-    if (speedY.abs() < 1) {
+    if (speedY.abs() < 0.1) {
       speedY = 0.0;
     }
 
