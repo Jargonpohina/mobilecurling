@@ -57,6 +57,15 @@ class Game {
     }
   }
 
+  bool rollingStones() {
+    for (final stone in stones) {
+      if (stone.speed > 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /// Stops the gameloop
   void stop() {
     _timer.cancel();
