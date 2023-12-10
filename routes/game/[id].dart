@@ -93,6 +93,13 @@ Future<Response> onRequest(RequestContext context, String id) async {
               // Search a stone from the game that is this user's stone and that is still in the starting position
               final selectedStone = stones.firstWhere((element) => (element.user == messageObj.user) && (element.x == 548.64) && (element.y == 250));
               selectedStone.slide(messageObj.slide!.angle, messageObj.slide!.speed);
+              final state = games[index].state;
+              games[index] = (
+                state: games[index].state.copyWith(
+                      playerInTurn: state.playerInTurn == state.playerOne ? state.playerTwo : state.playerOne,
+                    ),
+                game: game,
+              );
             }
           }
       }
