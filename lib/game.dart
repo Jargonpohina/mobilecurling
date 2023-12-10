@@ -1,5 +1,5 @@
 import 'dart:async';
-// import 'dart:io';
+import 'dart:io';
 import 'package:mobilecurling/components/stone.dart';
 import 'package:mobilecurling/core/shared_classes/user/user.dart';
 
@@ -51,6 +51,7 @@ class Game {
   void initStones() {
     for (User user in users) {
       for (int i = 0; i < 4; i++) {
+        // for debugging: stones.add(Stone(user: user, x: 548.64, y: 250));
         stones.add(Stone(user: user));
       }
     }
@@ -83,17 +84,15 @@ class Game {
 /*
 void main() {
   final test = Game(
-      playerOne: const User(username: 'test', password: 'test'),
-      playerTwo: const User(username: 'test1', password: 'test2'));
+    playerOne: const User(username: 'test', password: 'test'),
+    playerTwo: const User(username: 'test1', password: 'test2'),
+  );
+
+  final estekivi = Stone(user: null, x: 4023.804789965249, y: 250);
+  test.activeStones.add(estekivi);
 
   final kivi = test.stones.first;
   test.activeStones.add(kivi);
-  kivi.slide(30, 180);
-
-  sleep(Duration(seconds: 15));
-
-  final kivi1 = test.stones[7];
-  test.activeStones.add(kivi1);
-  kivi1.slide(30, 180);
+  kivi.slide(1, 180);
 }
 */

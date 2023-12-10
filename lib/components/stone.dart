@@ -6,42 +6,58 @@ import 'package:uuid/uuid.dart';
 /// Curling stone object
 class Stone {
   /// Constructor
-  Stone({required this.user}) : id = Uuid().v4();
+  // For debugging purposes use the following format:
+  //Stone({required this.user, required this.x, required this.y})
+  //    : id = Uuid().v4();
+  Stone({required this.user}) : id = const Uuid().v4();
   Sheet sheet = Sheet();
   User? user;
   final String? id;
-  static const double radius = 14.53;
+  // actually 14.53cm, but client scales to 64x64 sprite
+  static const double radius = 32;
   static const double mass = 19.96;
   double x = 548.64;
   double y = 250;
+  // double? x; // original: 548.64
+  // double? y; // original: 250
   double angle = 0.0;
   double speed = 0.0;
   double speedX = 0.0;
   double speedY = 0.0;
   bool started = false;
 
-  /// helper function to check if colliding with another stone
-  bool isCollidingWithStone(Stone otherStone) {
-    final distance = sqrt(pow(x - otherStone.x, 2) + pow(y - otherStone.y, 2));
+  /// helper function to check if stone will collide during the next timestamp
+  bool isGoingToCollideWithStone(Stone otherStone, double deltaTime) {
+    double futureX = x! + speedX * deltaTime;
+    double futureY = y! + speedY * deltaTime;
+
+    // onkohan tässä yksiköt ihan ok hmm
+    // nopeuden komponentit on mallia cm/s? ja deltaTime on [milliseconds/1000]
+    double otherFutureX = otherStone.x! + otherStone.speedX * deltaTime;
+    double otherFutureY = otherStone.y! + otherStone.speedY * deltaTime;
+
+    double distance =
+        sqrt(pow(futureX - otherFutureX, 2) + pow(futureY - otherFutureY, 2));
+
+    // print('distance in the next timestamp: $distance');
+
     return distance < 2 * radius; // radius + otherStone.radius
   }
 
   /// phys function to handle collisions between stones
   void handleStoneCollision(Stone otherStone) {
-    // print('Two stones collided!');
+    //print('Calculating collision from $id');
+    //print('Current stone: $x, $y');
+    //print('Other stone: ${otherStone.x}, ${otherStone.y}');
 
     /// difference between stones' x-coords
-    final dx = otherStone.x - x;
-    //print('diff x: $dx');
+    final dx = otherStone.x! - x!;
 
     /// difference between stones' y-coords
-    final dy = otherStone.y - y;
-
-    //print('diff y: $dy');
+    final dy = otherStone.y! - y!;
 
     /// collision angle based on coord differences
     final collAngle = atan2(dy, dx);
-    //print('Collision angle: $collAngle');
 
     final thisSpeed = sqrt(pow(speedX, 2) + pow(speedY, 2));
     final otherSpeed =
@@ -50,34 +66,34 @@ class Stone {
     final thisDirection = atan2(speedY, speedX);
     final otherDirection = atan2(otherStone.speedY, otherStone.speedX);
 
-    // speeds after collision
+    // speeds after collision as they have same masses
     final thisSpeed1 = otherSpeed;
     final otherSpeed1 = thisSpeed;
 
-    //print('Speed of the first stone after coll: $thisSpeed1');
-    //print('Speed of the second stone after collision: $otherSpeed1');
+    speedX = thisSpeed1 * cos(thisDirection - collAngle);
+    speedY = thisSpeed1 * sin(otherDirection - collAngle);
 
-    //print('Will slide first stone in angle: ${thisDirection - collAngle}');
-    //print('Will slide other stone in angle: ${otherDirection - collAngle}');
-
-    slide(thisDirection - collAngle, thisSpeed1);
-    otherStone.slide(otherDirection - collAngle, otherSpeed1);
+    otherStone.speedX = otherSpeed1 * cos(otherDirection - collAngle);
+    otherStone.speedY = otherSpeed1 * sin(otherDirection - collAngle);
   }
 
-  /// helper function to check if colliding with boundary
-  void isCollidingWithBoundary() {
-    if (x - radius < sheet.left || x + radius > sheet.right) {
-      //print('Is colliding with horizontal boundaries. Changing horiz. vel');
-      //print('Old speed: $speedX');
+  /// checks if the stone is within boundaries and fixes pos & vel if needed
+  void checkBoundaries() {
+    if (x! - radius < sheet.left) {
+      x = radius;
       speedX = -speedX;
-      //print('New speed $speedX');
     }
-
-    if (y - radius < sheet.top || y + radius > sheet.bottom) {
-      //print('Is colliding with vertical boundaries. Changing vertical vel');
-      //print('Old speed: $speedY');
+    if (x! + radius > sheet.right) {
+      x = sheet.right - radius;
+      speedX = -speedX;
+    }
+    if (y! - radius < sheet.top) {
+      y = radius;
       speedY = -speedY;
-      //print('new speed: $speedY');
+    }
+    if (y! + radius > sheet.bottom) {
+      y = sheet.bottom - radius;
+      speedY = -speedY;
     }
   }
 
@@ -88,27 +104,19 @@ class Stone {
     double radians = angle * (pi / 180);
     if (!started) {
       started = true;
-      // Nopeus x-suunnassa
       speedX = speed * cos(radians);
-      // Nopeus y-suunnassa
       speedY = speed * sin(radians);
-
-      /*
-      print('initial speedx $speedX');
-      print('intiial speedY $speedY');
-      print('initial X coord: $x');
-      print('initial Y: $y');
-      print('radius: $radius');
-      */
     }
   }
 
   /// phys engine (SheetPhysX)
   void update(double deltaTime, List<Stone> activeStones) {
+    // Ongelmat:
+    // -kivicollisionin myötä voi valua reunojen yli
+    // -kivicollisionin myötä vuoro päättyy liian aikaisin
+    // -kiekko voi kovalla vauhdilla mennä reunan yli ja jää jumiin sinne
     double dragX;
     double dragY;
-
-    //print('Hello from $id');
 
     if (speedX.abs() > 0) {
       dragX = 0.5 * sheet.dynamicFriction * pow(speedX, 2) / mass;
@@ -118,7 +126,6 @@ class Stone {
       } else {
         speedX -= dragX;
       }
-      // print("drax: $dragX");
     }
 
     if (speedY.abs() > 0) {
@@ -129,7 +136,6 @@ class Stone {
       } else {
         speedY -= dragY;
       }
-      // print("dray: $dragY");
     }
 
     /*
@@ -154,15 +160,15 @@ class Stone {
     }
 
     if (speed > 0.0) {
-      isCollidingWithBoundary();
+      checkBoundaries();
       for (final otherStone in activeStones) {
-        if (otherStone != this && isCollidingWithStone(otherStone)) {
+        if (otherStone != this &&
+            isGoingToCollideWithStone(otherStone, deltaTime)) {
           handleStoneCollision(otherStone);
         }
       }
     }
-
-    x = x + speedX;
-    y = y + speedY;
+    x = x! + speedX;
+    y = y! + speedY;
   }
 }
