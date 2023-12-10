@@ -16,6 +16,8 @@ class Stone {
   static const double mass = 19.96;
   double angle = 0.0;
   double speed = 0.0;
+  double speedX = 0.0;
+  double speedY = 0.0;
 
   /// helper function to check if colliding with another stone
   bool isCollidingWith(Stone otherStone) {
@@ -38,11 +40,15 @@ class Stone {
     double radians = angle * (pi / 180);
 
     // Nopeus x-suunnassa
-    double speedX = speed * cos(radians);
+    if (speedX == 0.0) {
+      speedX = speed * cos(radians);
+    }
     // Nopeus y-suunnassa
-    double speedY = speed * sin(radians);
+    if (this.speedY == 0.0) {
+      speedY = speed * sin(radians);
+    }
 
-    // Drags. FIXME
+    // Drags
     double dragX = 0.5 * 0.02 * pow(speedX, 2) / mass;
     double dragY = 0.5 * 0.02 * pow(speedY, 2) / mass;
 
@@ -56,6 +62,11 @@ class Stone {
 
     if (speedY.abs() < 0.01) {
       speedY = 0.0;
+    }
+
+    if (speedX == 0.0 && speedY == 0.0) {
+      speed = 0;
+      angle = 0;
     }
 
     // TODO: Laske uusien koordinaattien pysyminen koordinaatistossa
