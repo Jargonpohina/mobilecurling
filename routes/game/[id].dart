@@ -73,7 +73,6 @@ Future<Response> onRequest(RequestContext context, String id) async {
               // The game doesn't exist, so this is the first player creating it. Let's add the game state.
               games.add((state: GameState(playerOne: messageObj.user, lobby: messageObj.lobby), game: null));
               // Add the game to the main loop to be messaged every 10 milliseconds.
-              channels.add((channelID: id, lobbyID: messageObj.lobby!.id, channel: channel));
               gameLoop(lobbyID: messageObj.lobby!.id, channel: channel);
             }
           }
