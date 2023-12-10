@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:mobilecurling/components/sheet.dart';
-import 'package:mobilecurling/core/classes/user/user.dart';
+import 'package:mobilecurling/core/shared_classes/user/user.dart';
 import 'package:uuid/uuid.dart';
 
 /// Curling stone object
@@ -22,8 +22,7 @@ class Stone {
 
   /// helper function to check if colliding with another stone
   bool isCollidingWithStone(Stone otherStone) {
-    double distanceSquared = (x - otherStone.x) * (x - otherStone.x) +
-        (y - otherStone.y) * (y - otherStone.y);
+    double distanceSquared = (x - otherStone.x) * (x - otherStone.x) + (y - otherStone.y) * (y - otherStone.y);
     double minDistanceSquared = (2 * radius) * (2 * radius);
     return distanceSquared < minDistanceSquared;
   }

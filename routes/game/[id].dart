@@ -4,9 +4,9 @@ import 'dart:convert';
 
 import 'package:dart_frog/dart_frog.dart';
 import 'package:dart_frog_web_socket/dart_frog_web_socket.dart';
-import 'package:mobilecurling/core/classes/game_state/game_state.dart';
-import 'package:mobilecurling/core/classes/message/message.dart';
-import 'package:mobilecurling/core/classes/stone/stone.dart';
+import 'package:mobilecurling/core/shared_classes/game_state/game_state.dart';
+import 'package:mobilecurling/core/shared_classes/message/message.dart';
+import 'package:mobilecurling/core/shared_classes/stone/stone.dart';
 import 'package:mobilecurling/game.dart';
 
 import '../../main.dart';
@@ -20,7 +20,7 @@ int gameIndex(String lobbyID) {
 /// Reflects the game world into the game state simply by copying the stone data into StoneAPI objects.
 GameState reflectGameWorld({required GameState gameState, required Game game}) {
   return gameState.copyWith(
-    stones: game.stones.map((e) => StoneAPI(x: e.x!, y: e.y!, started: e.started, id: e.id!, user: e.user)).toList(),
+    stones: game.stones.map((e) => StoneAPI(x: e.x, y: e.y, started: e.started, id: e.id!, user: e.user)).toList(),
     canSlide: !game.rollingStones(),
   );
 }
