@@ -17,6 +17,12 @@ class StoneAPI with _$StoneAPI {
     /// Y coordinate of the stone
     @Default(0.0) double y,
 
+    /// Has the stone been slid
+    @Default(false) bool started,
+
+    /// The ID of the stone
+    @Default('') String id,
+
     /// The user who threw this stone
     @Default(null) User? user,
   }) = _StoneAPI;

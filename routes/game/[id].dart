@@ -20,7 +20,7 @@ int gameIndex(String lobbyID) {
 /// Reflects the game world into the game state simply by copying the stone data into StoneAPI objects.
 GameState reflectGameWorld({required GameState gameState, required Game game}) {
   return gameState.copyWith(
-    stones: game.stones.map((e) => StoneAPI(x: e.x!, y: e.y!, user: e.user)).toList(),
+    stones: game.stones.map((e) => StoneAPI(x: e.x!, y: e.y!, started: e.started, id: e.id!, user: e.user)).toList(),
     canSlide: !game.rollingStones(),
   );
 }

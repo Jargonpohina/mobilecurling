@@ -26,6 +26,12 @@ mixin _$StoneAPI {
   /// Y coordinate of the stone
   double get y => throw _privateConstructorUsedError;
 
+  /// Has the stone been slid
+  bool get started => throw _privateConstructorUsedError;
+
+  /// The ID of the stone
+  String get id => throw _privateConstructorUsedError;
+
   /// The user who threw this stone
   User? get user => throw _privateConstructorUsedError;
 
@@ -40,7 +46,7 @@ abstract class $StoneAPICopyWith<$Res> {
   factory $StoneAPICopyWith(StoneAPI value, $Res Function(StoneAPI) then) =
       _$StoneAPICopyWithImpl<$Res, StoneAPI>;
   @useResult
-  $Res call({double x, double y, User? user});
+  $Res call({double x, double y, bool started, String id, User? user});
 
   $UserCopyWith<$Res>? get user;
 }
@@ -60,6 +66,8 @@ class _$StoneAPICopyWithImpl<$Res, $Val extends StoneAPI>
   $Res call({
     Object? x = null,
     Object? y = null,
+    Object? started = null,
+    Object? id = null,
     Object? user = freezed,
   }) {
     return _then(_value.copyWith(
@@ -71,6 +79,14 @@ class _$StoneAPICopyWithImpl<$Res, $Val extends StoneAPI>
           ? _value.y
           : y // ignore: cast_nullable_to_non_nullable
               as double,
+      started: null == started
+          ? _value.started
+          : started // ignore: cast_nullable_to_non_nullable
+              as bool,
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
       user: freezed == user
           ? _value.user
           : user // ignore: cast_nullable_to_non_nullable
@@ -99,7 +115,7 @@ abstract class _$$StoneAPIImplCopyWith<$Res>
       __$$StoneAPIImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({double x, double y, User? user});
+  $Res call({double x, double y, bool started, String id, User? user});
 
   @override
   $UserCopyWith<$Res>? get user;
@@ -118,6 +134,8 @@ class __$$StoneAPIImplCopyWithImpl<$Res>
   $Res call({
     Object? x = null,
     Object? y = null,
+    Object? started = null,
+    Object? id = null,
     Object? user = freezed,
   }) {
     return _then(_$StoneAPIImpl(
@@ -129,6 +147,14 @@ class __$$StoneAPIImplCopyWithImpl<$Res>
           ? _value.y
           : y // ignore: cast_nullable_to_non_nullable
               as double,
+      started: null == started
+          ? _value.started
+          : started // ignore: cast_nullable_to_non_nullable
+              as bool,
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
       user: freezed == user
           ? _value.user
           : user // ignore: cast_nullable_to_non_nullable
@@ -140,7 +166,12 @@ class __$$StoneAPIImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$StoneAPIImpl extends _StoneAPI {
-  const _$StoneAPIImpl({this.x = 0.0, this.y = 0.0, this.user = null})
+  const _$StoneAPIImpl(
+      {this.x = 0.0,
+      this.y = 0.0,
+      this.started = false,
+      this.id = '',
+      this.user = null})
       : super._();
 
   factory _$StoneAPIImpl.fromJson(Map<String, dynamic> json) =>
@@ -156,6 +187,16 @@ class _$StoneAPIImpl extends _StoneAPI {
   @JsonKey()
   final double y;
 
+  /// Has the stone been slid
+  @override
+  @JsonKey()
+  final bool started;
+
+  /// The ID of the stone
+  @override
+  @JsonKey()
+  final String id;
+
   /// The user who threw this stone
   @override
   @JsonKey()
@@ -163,7 +204,7 @@ class _$StoneAPIImpl extends _StoneAPI {
 
   @override
   String toString() {
-    return 'StoneAPI(x: $x, y: $y, user: $user)';
+    return 'StoneAPI(x: $x, y: $y, started: $started, id: $id, user: $user)';
   }
 
   @override
@@ -173,12 +214,14 @@ class _$StoneAPIImpl extends _StoneAPI {
             other is _$StoneAPIImpl &&
             (identical(other.x, x) || other.x == x) &&
             (identical(other.y, y) || other.y == y) &&
+            (identical(other.started, started) || other.started == started) &&
+            (identical(other.id, id) || other.id == id) &&
             (identical(other.user, user) || other.user == user));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, x, y, user);
+  int get hashCode => Object.hash(runtimeType, x, y, started, id, user);
 
   @JsonKey(ignore: true)
   @override
@@ -195,8 +238,12 @@ class _$StoneAPIImpl extends _StoneAPI {
 }
 
 abstract class _StoneAPI extends StoneAPI {
-  const factory _StoneAPI({final double x, final double y, final User? user}) =
-      _$StoneAPIImpl;
+  const factory _StoneAPI(
+      {final double x,
+      final double y,
+      final bool started,
+      final String id,
+      final User? user}) = _$StoneAPIImpl;
   const _StoneAPI._() : super._();
 
   factory _StoneAPI.fromJson(Map<String, dynamic> json) =
@@ -210,6 +257,14 @@ abstract class _StoneAPI extends StoneAPI {
 
   /// Y coordinate of the stone
   double get y;
+  @override
+
+  /// Has the stone been slid
+  bool get started;
+  @override
+
+  /// The ID of the stone
+  String get id;
   @override
 
   /// The user who threw this stone
