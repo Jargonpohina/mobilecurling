@@ -16,7 +16,6 @@ class Stone {
   static const double mass = 19.96;
   double angle = 0.0;
   double speed = 0.0;
-  bool done = false;
   bool started = false;
   double speedX = 0.0;
   double speedY = 0.0;
@@ -83,8 +82,6 @@ class Stone {
 
     if (speedX == 0.0 && speedY == 0.0) {
       speed = 0.0;
-      started = false;
-      done = true;
     }
 
     // TODO: Laske uusien koordinaattien pysyminen koordinaatistossa
