@@ -19,7 +19,10 @@ int gameIndex(String lobbyID) {
 
 /// Reflects the game world into the game state simply by copying the stone data into StoneAPI objects.
 GameState reflectGameWorld({required GameState gameState, required Game game}) {
-  return gameState.copyWith(stones: game.stones.map((e) => StoneAPI(x: e.x!, y: e.y!, user: e.user)).toList());
+  return gameState.copyWith(
+    stones: game.stones.map((e) => StoneAPI(x: e.x!, y: e.y!, user: e.user)).toList(),
+    canSlide: !game.rollingStones(),
+  );
 }
 
 void gameLoop({required String lobbyID, required WebSocketChannel channel}) {
@@ -63,7 +66,10 @@ Future<Response> onRequest(RequestContext context, String id) async {
             if (index != -1) {
               // First, update the game state by adding the another player there.
               games[index] = (
-                state: games[index].state.copyWith(playerTwo: messageObj.user),
+                state: games[index].state.copyWith(
+                      playerTwo: messageObj.user,
+                      playerInTurn: messageObj.user,
+                    ),
                 game: Game(playerOne: games[index].state.playerOne!, playerTwo: messageObj.user!),
               );
               // Already return the current game state back there
