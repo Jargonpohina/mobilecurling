@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io';
+// import 'dart:io';
 import 'package:mobilecurling/components/stone.dart';
 import 'package:mobilecurling/core/shared_classes/user/user.dart';
 
@@ -93,6 +93,6 @@ void main() {
 
   final kivi = test.stones.first;
   test.activeStones.add(kivi);
-  kivi.slide(1, 180);
+  kivi.slide(0, 270);
 }
 */

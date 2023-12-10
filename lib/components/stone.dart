@@ -79,6 +79,7 @@ class Stone {
 
   /// checks if the stone is within boundaries and fixes pos & vel if needed
   void checkBoundaries() {
+    // print('Checking $id boundaries: $x $y');
     if (x! - radius < sheet.left) {
       x = radius;
       speedX = -speedX;
@@ -109,12 +110,8 @@ class Stone {
     }
   }
 
-  /// phys engine (SheetPhysX)
+  /// low-quality phys engine by tikibeni (SheetPhysX)
   void update(double deltaTime, List<Stone> activeStones) {
-    // Ongelmat:
-    // -kivicollisionin myötä voi valua reunojen yli
-    // -kivicollisionin myötä vuoro päättyy liian aikaisin
-    // -kiekko voi kovalla vauhdilla mennä reunan yli ja jää jumiin sinne
     double dragX;
     double dragY;
 
@@ -138,15 +135,6 @@ class Stone {
       }
     }
 
-    /*
-    if (speedX.abs() > 0) {
-      print('SX: $speedX');
-    }
-    if (speedY.abs() > 0) {
-      print('SY: $speedY');
-    }
-    */
-
     if (speedX.abs() < 0.05) {
       speedX = 0.0;
     }
@@ -155,11 +143,7 @@ class Stone {
       speedY = 0.0;
     }
 
-    if (speedX == 0.0 && speedY == 0.0) {
-      speed = 0.0;
-    }
-
-    if (speed > 0.0) {
+    if (speedX > 0.0 || speedY > 0.0) {
       checkBoundaries();
       for (final otherStone in activeStones) {
         if (otherStone != this &&
