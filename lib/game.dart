@@ -44,8 +44,7 @@ class Game {
   void initStones() {
     for (User user in users) {
       for (int i = 0; i < 4; i++) {
-        // starting point is 54.864m horizontal and 2.5m vertical
-        stones.add(Stone(x: 548.64, y: 250, user: user));
+        stones.add(Stone(user: user));
       }
     }
   }
@@ -79,8 +78,6 @@ void main() {
       playerOne: User(username: 'test', password: 'test'),
       playerTwo: User(username: 'test1', password: 'test2'));
 
-  final kivi = test.stones.first;
-
-  kivi.slide(0, 180);
+  final kivi = test.stones.first.slide(30, 180);
 }
 */
