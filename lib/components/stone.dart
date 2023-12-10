@@ -14,9 +14,8 @@ class Stone {
   User? user;
   static const double radius = 14.53;
   static const double mass = 19.96;
+  double angle = 0.0;
   double speed = 0.0;
-  double speedX = 0.0;
-  double speedY = 0.0;
 
   /// helper function to check if colliding with another stone
   bool isCollidingWith(Stone otherStone) {
@@ -27,12 +26,8 @@ class Stone {
   }
 
   void slide(double angle, double speed) {
+    this.angle = angle;
     this.speed = speed;
-    double radians = angle * (pi / 180);
-    // Nopeus x-suunnassa
-    speedX = speed * cos(radians);
-    // Nopeus y-suunnassa
-    speedY = speed * sin(radians);
   }
 
   void update(double deltaTime) {
@@ -40,35 +35,33 @@ class Stone {
     // Lasketaan vain jarrutusta.
     // Kulmien nopeuksien jälkeen laske kitkan vaikutus X- ja Y-nopeuksiin ajan
     // funktiona.
+    double radians = angle * (pi / 180);
+
+    // Nopeus x-suunnassa
+    double speedX = speed * cos(radians);
+    // Nopeus y-suunnassa
+    double speedY = speed * sin(radians);
+
+    // Drags. FIXME
+    double dragX = 0.5 * 0.02 * pow(speedX, 2) / mass;
+    double dragY = 0.5 * 0.02 * pow(speedY, 2) / mass;
+
+    // Speed reductions based on drag and mass
+    speedX -= dragX;
+    speedY -= dragY;
+
+    if (speedX.abs() < 0.01) {
+      speedX = 0.0;
+    }
+
+    if (speedY.abs() < 0.01) {
+      speedY = 0.0;
+    }
 
     // TODO: Laske uusien koordinaattien pysyminen koordinaatistossa
     // - laske tähän kimpoaminen reunoista ja
     // - laske kimpoaminen muista kiekoista
     // if (x! + speedX)
-
-    // Drags
-    double dragX = 0.5 * 0.02 * pow(speedX, 2);
-    double dragY = 0.5 * 0.02 * pow(speedY, 2);
-
-    // Negative acceleration (drag) from F = ma
-    double accelerationX = -dragX / mass;
-    double accelerationY = -dragY / mass;
-
-    // Speed reductions based on drag and mass
-    speedX += accelerationX * deltaTime;
-    speedY += accelerationY * deltaTime;
-
-    if (speedX.abs() < 0.1) {
-      speedX = 0.0;
-    }
-
-    if (speedY.abs() < 0.1) {
-      speedY = 0.0;
-    }
-
-    if (speedX == 0.0 && speedY == 0.0) {
-      speed = 0;
-    }
 
     // new positions of coordinates
     x = x! + speedX;
