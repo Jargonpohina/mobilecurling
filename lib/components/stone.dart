@@ -31,17 +31,17 @@ class Stone {
   /// helper function to check if colliding with boundary
   void isCollidingWithBoundary() {
     if (x - radius < sheet.left || x + radius > sheet.right) {
-      // print('Is colliding with horizontal boundaries. Changing horiz. vel');
-      // print('Old speed: $speedX');
+      //print('Is colliding with horizontal boundaries. Changing horiz. vel');
+      //print('Old speed: $speedX');
       speedX = -speedX;
-      // print('New speed $speedX');
+      //print('New speed $speedX');
     }
 
     if (y - radius < sheet.top || y + radius > sheet.bottom) {
-      // print('Is colliding with vertical boundaries. Changing vertical vel');
-      // print('Old speed: $speedY');
+      //print('Is colliding with vertical boundaries. Changing vertical vel');
+      //print('Old speed: $speedY');
       speedY = -speedY;
-      // print('new speed: $speedY');
+      //print('new speed: $speedY');
     }
   }
 
@@ -92,20 +92,18 @@ class Stone {
       // print("dray: $dragY");
     }
 
-    /*
     if (speedX.abs() > 0) {
       print('SX: $speedX');
     }
     if (speedY.abs() > 0) {
       print('SY: $speedY');
     }
-    */
 
-    if (speedX.abs() < 0.1) {
+    if (speedX.abs() < 0.05) {
       speedX = 0.0;
     }
 
-    if (speedY.abs() < 0.1) {
+    if (speedY.abs() < 0.05) {
       speedY = 0.0;
     }
 
