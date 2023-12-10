@@ -1,4 +1,4 @@
-// ignore_for_file: cascade_invocations, lines_longer_than_80_chars, avoid_bool_literals_in_conditional_expressions
+// ignore_for_file: cascade_invocations, lines_longer_than_80_chars, avoid_bool_literals_in_conditional_expressions, inference_failure_on_function_invocation
 
 import 'dart:convert';
 
@@ -22,16 +22,50 @@ GameState reflectGameWorld({required GameState gameState, required Game game}) {
   return gameState.copyWith(
     stones: game.stones.map((e) => StoneAPI(x: e.x, y: e.y, started: e.started, id: e.id!, user: e.user)).toList(),
     canSlide: !game.rollingStones(),
+    gameState: gameState.gameState == State.quitting
+        ? State.quitting
+        : game.activeStones.length >= 8
+            ? !game.rollingStones()
+                ? State.resolved
+                : State.ended
+            : State.started,
   );
+}
+
+/// Resolves the game by deleting the lobby
+Future<void> resolveGame(GameState game, String lobbyID) async {
+  Future.delayed(const Duration(milliseconds: 1000), () async {
+    final index = gameIndex(lobbyID);
+    if (index != -1) {
+      games.removeAt(index);
+      // Send to lobby server to delete the lobby
+      await dio.post(
+        '$lobbyServerUrl/lobby/delete',
+        data: game.lobby!.toJson(),
+      );
+      // Send to auth server to reward the winning player with score
+      await dio.post(
+        '$authServerUrl/addscore',
+        data: game.playerOneScore > game.playerTwoScore ? game.playerOne!.toJson() : game.playerTwo!.toJson(),
+      );
+    }
+  });
 }
 
 void gameLoop({required String lobbyID, required WebSocketChannel channel}) {
   Future.delayed(const Duration(milliseconds: 10), () {
-    // It's a RECURSION! God bless America.
-    gameLoop(lobbyID: lobbyID, channel: channel);
     // Let's send the game state to clients.
     final index = gameIndex(lobbyID);
     if (index != -1) {
+      if (games[index].state.gameState == State.resolved) {
+        games[index] = (
+          state: games[index].state.copyWith(gameState: State.quitting),
+          game: games[index].game,
+        );
+        resolveGame(games[index].state, lobbyID);
+      }
+      // It's a RECURSION! God bless America.
+      gameLoop(lobbyID: lobbyID, channel: channel);
       // If both players have joined the game, let's reflect the Game object's game world to the Game State that turns it into JSON.
       if (games[index].state.playerOne != null && games[index].state.playerTwo != null && games[index].game != null) {
         games[index] = (

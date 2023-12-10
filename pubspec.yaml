@@ -9,6 +9,7 @@ environment:
 dependencies:
   dart_frog: ^1.0.0
   dart_frog_web_socket: ^1.0.0
+  dio: ^5.4.0
   freezed_annotation: ^2.4.1
   json_annotation: ^4.8.1
   uuid: ^4.0.0
