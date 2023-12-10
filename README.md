@@ -11,9 +11,19 @@
 
 ![alt logo](/doc/MB_CURLING.png)
 
-This will be the real-time server node of the project. 
+This is the real-time server node of the project. 
 Also works as the primary documentation node
 regarding the course.
+
+Running here: https://rts-ic4hp354na-ew.a.run.app
+
+Deployment can be updated by:
+
+```sh
+~/mobilecurling$ dart pub get
+~/mobilecurling$ dart_frog build
+~/mobilecurling$ gcloud run deploy rts --source build   --project=united-kiln-407618   --region=europe-west1   --allow-unauthenticated
+```
 
 ## Components of the application
 
