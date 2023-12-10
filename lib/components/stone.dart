@@ -56,7 +56,7 @@ class Stone {
 
     // Speed reductions based on drag and mass
     speedX += accelerationX * deltaTime;
-    speedY -= accelerationY * deltaTime;
+    speedY += accelerationY * deltaTime;
 
     if (speedX.abs() < 0.1) {
       speedX = 0.0;
