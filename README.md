@@ -17,8 +17,7 @@ regarding the course.
 
 - [Client](https://github.com/Jargonpohina/mobilecurling-client)
 - [Auth node](https://github.com/Jargonpohina/mobilecurling-auth)
-- Game state node (Coming soon)
-- Matchmaking node (Coming soon)
+- [Matchmaking node](https://github.com/Jargonpohina/mobilecurling-lobby)
 
 ## Documentation
 
