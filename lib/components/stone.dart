@@ -30,7 +30,7 @@ class Stone {
     this.speed = speed;
   }
 
-  void update() {
+  void update(double deltaTime) {
     // Laske X- ja Y-suuntaiset nopeudet kulman ja alkunopeuden perusteella
     // Lasketaan vain jarrutusta.
     // Kulmien nopeuksien jälkeen laske kitkan vaikutus X- ja Y-nopeuksiin ajan
@@ -42,9 +42,9 @@ class Stone {
     // Nopeus y-suunnassa
     double speedY = speed * sin(radians);
 
-    // Drags
-    double dragX = 0.5 * 0.02 * pow(speedX, 2);
-    double dragY = 0.5 * 0.02 * pow(speedY, 2);
+    // Drags. FIXME
+    double dragX = 0.5 * 0.02 * pow(speedX, 2) * (deltaTime * 100);
+    double dragY = 0.5 * 0.02 * pow(speedY, 2) * (deltaTime * 100);
 
     // Speed reductions based on drag and mass
     speedX -= dragX / mass;
@@ -61,6 +61,7 @@ class Stone {
     // TODO: Laske uusien koordinaattien pysyminen koordinaatistossa
     // - laske tähän kimpoaminen reunoista ja
     // - laske kimpoaminen muista kiekoista
+    // if (x! + speedX)
 
     // new positions of coordinates
     x = x! + speedX;

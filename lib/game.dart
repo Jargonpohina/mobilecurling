@@ -53,7 +53,7 @@ class Game {
   /// Updates the game based on ticks
   void update(double deltaTime) {
     for (final stone in stones) {
-      stone.update();
+      stone.update(deltaTime);
     }
   }
 
