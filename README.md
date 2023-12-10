@@ -36,7 +36,7 @@ Deployment can be updated by:
 Check [documentation](/doc) for more detailed information.
 
 - [Design plan](/doc/groupBP_design_plan.pdf)
-- [Overview of todo](/doc/todo.md)
+- [Working time](/doc/working_time.md)
 
 ## Install
 
