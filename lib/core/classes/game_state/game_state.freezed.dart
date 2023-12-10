@@ -40,6 +40,7 @@ mixin _$GameState {
 
   /// If the players can slide a stone
   bool get canSlide => throw _privateConstructorUsedError;
+  List<StoneAPI> get stones => throw _privateConstructorUsedError;
 
   /// The state of the game. It's either started or ended.
   State get gameState => throw _privateConstructorUsedError;
@@ -63,6 +64,7 @@ abstract class $GameStateCopyWith<$Res> {
       int playerTwoScore,
       User? playerInTurn,
       bool canSlide,
+      List<StoneAPI> stones,
       State gameState});
 
   $LobbyCopyWith<$Res>? get lobby;
@@ -91,6 +93,7 @@ class _$GameStateCopyWithImpl<$Res, $Val extends GameState>
     Object? playerTwoScore = null,
     Object? playerInTurn = freezed,
     Object? canSlide = null,
+    Object? stones = null,
     Object? gameState = null,
   }) {
     return _then(_value.copyWith(
@@ -122,6 +125,10 @@ class _$GameStateCopyWithImpl<$Res, $Val extends GameState>
           ? _value.canSlide
           : canSlide // ignore: cast_nullable_to_non_nullable
               as bool,
+      stones: null == stones
+          ? _value.stones
+          : stones // ignore: cast_nullable_to_non_nullable
+              as List<StoneAPI>,
       gameState: null == gameState
           ? _value.gameState
           : gameState // ignore: cast_nullable_to_non_nullable
@@ -194,6 +201,7 @@ abstract class _$$GameStateImplCopyWith<$Res>
       int playerTwoScore,
       User? playerInTurn,
       bool canSlide,
+      List<StoneAPI> stones,
       State gameState});
 
   @override
@@ -224,6 +232,7 @@ class __$$GameStateImplCopyWithImpl<$Res>
     Object? playerTwoScore = null,
     Object? playerInTurn = freezed,
     Object? canSlide = null,
+    Object? stones = null,
     Object? gameState = null,
   }) {
     return _then(_$GameStateImpl(
@@ -255,6 +264,10 @@ class __$$GameStateImplCopyWithImpl<$Res>
           ? _value.canSlide
           : canSlide // ignore: cast_nullable_to_non_nullable
               as bool,
+      stones: null == stones
+          ? _value._stones
+          : stones // ignore: cast_nullable_to_non_nullable
+              as List<StoneAPI>,
       gameState: null == gameState
           ? _value.gameState
           : gameState // ignore: cast_nullable_to_non_nullable
@@ -274,8 +287,10 @@ class _$GameStateImpl extends _GameState {
       this.playerTwoScore = 0,
       this.playerInTurn = null,
       this.canSlide = false,
+      final List<StoneAPI> stones = const [],
       this.gameState = State.started})
-      : super._();
+      : _stones = stones,
+        super._();
 
   factory _$GameStateImpl.fromJson(Map<String, dynamic> json) =>
       _$$GameStateImplFromJson(json);
@@ -314,6 +329,14 @@ class _$GameStateImpl extends _GameState {
   @override
   @JsonKey()
   final bool canSlide;
+  final List<StoneAPI> _stones;
+  @override
+  @JsonKey()
+  List<StoneAPI> get stones {
+    if (_stones is EqualUnmodifiableListView) return _stones;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_stones);
+  }
 
   /// The state of the game. It's either started or ended.
   @override
@@ -322,7 +345,7 @@ class _$GameStateImpl extends _GameState {
 
   @override
   String toString() {
-    return 'GameState(lobby: $lobby, playerOne: $playerOne, playerOneScore: $playerOneScore, playerTwo: $playerTwo, playerTwoScore: $playerTwoScore, playerInTurn: $playerInTurn, canSlide: $canSlide, gameState: $gameState)';
+    return 'GameState(lobby: $lobby, playerOne: $playerOne, playerOneScore: $playerOneScore, playerTwo: $playerTwo, playerTwoScore: $playerTwoScore, playerInTurn: $playerInTurn, canSlide: $canSlide, stones: $stones, gameState: $gameState)';
   }
 
   @override
@@ -343,14 +366,24 @@ class _$GameStateImpl extends _GameState {
                 other.playerInTurn == playerInTurn) &&
             (identical(other.canSlide, canSlide) ||
                 other.canSlide == canSlide) &&
+            const DeepCollectionEquality().equals(other._stones, _stones) &&
             (identical(other.gameState, gameState) ||
                 other.gameState == gameState));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, lobby, playerOne, playerOneScore,
-      playerTwo, playerTwoScore, playerInTurn, canSlide, gameState);
+  int get hashCode => Object.hash(
+      runtimeType,
+      lobby,
+      playerOne,
+      playerOneScore,
+      playerTwo,
+      playerTwoScore,
+      playerInTurn,
+      canSlide,
+      const DeepCollectionEquality().hash(_stones),
+      gameState);
 
   @JsonKey(ignore: true)
   @override
@@ -375,6 +408,7 @@ abstract class _GameState extends GameState {
       final int playerTwoScore,
       final User? playerInTurn,
       final bool canSlide,
+      final List<StoneAPI> stones,
       final State gameState}) = _$GameStateImpl;
   const _GameState._() : super._();
 
@@ -409,6 +443,8 @@ abstract class _GameState extends GameState {
 
   /// If the players can slide a stone
   bool get canSlide;
+  @override
+  List<StoneAPI> get stones;
   @override
 
   /// The state of the game. It's either started or ended.

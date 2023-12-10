@@ -1,38 +1,45 @@
+// ignore_for_file: cascade_invocations, lines_longer_than_80_chars, avoid_bool_literals_in_conditional_expressions
+
 import 'dart:convert';
 
 import 'package:dart_frog/dart_frog.dart';
 import 'package:dart_frog_web_socket/dart_frog_web_socket.dart';
 import 'package:mobilecurling/core/classes/game_state/game_state.dart';
 import 'package:mobilecurling/core/classes/message/message.dart';
+import 'package:mobilecurling/core/classes/stone/stone.dart';
 import 'package:mobilecurling/game.dart';
 
 import '../../main.dart';
 
 /// Function that gets the index of the game state based on the ID of the lobby.
 int gameIndex(String lobbyID) {
-  final index = games.indexWhere((element) => element.lobby != null ? element.lobby!.id == lobbyID : false);
+  final index = games.indexWhere((element) => element.state.lobby != null ? element.state.lobby!.id == lobbyID : false);
   return index;
 }
 
-/// The loop that runs periodically to send messages to everyone in this websocket.
-/// This is where you want to start converting the calculated game data into a game state
-/// when both players have joined the game.
+/// Reflects the game world into the game state simply by copying the stone data into StoneAPI objects.
+GameState reflectGameWorld({required GameState gameState, required Game game}) {
+  return gameState.copyWith(stones: game.stones.map((e) => StoneAPI(x: e.x!, y: e.y!, user: e.user)).toList());
+}
+
 void gameLoop({required String lobbyID, required WebSocketChannel channel}) {
-  Future.delayed(Duration(milliseconds: 10), () {
+  Future.delayed(const Duration(milliseconds: 10), () {
     // It's a RECURSION! God bless America.
     gameLoop(lobbyID: lobbyID, channel: channel);
     // Let's send the game state to clients.
     final index = gameIndex(lobbyID);
     if (index != -1) {
-      // If both players have joined the game, let's start it.
-      if (games[index].playerOne != null && games[index].playerTwo != null) {
-        final Game game = Game(playerOne: games[index].playerOne!, playerTwo: games[index].playerTwo!);
-        print(game); // tää on iha vaa demo
+      // If both players have joined the game, let's reflect the Game object's game world to the Game State that turns it into JSON.
+      if (games[index].state.playerOne != null && games[index].state.playerTwo != null && games[index].game != null) {
+        games[index] = (
+          state: reflectGameWorld(gameState: games[index].state, game: games[index].game!),
+          game: games[index].game,
+        );
       }
 
       /// Lets send the game state with freezed as json that has been converted to a string back
       /// to clients.
-      channel.sink.add(jsonEncode(games[index].toJson()));
+      channel.sink.add(jsonEncode(games[index].state.toJson()));
     }
   });
 }
@@ -41,7 +48,6 @@ Future<Response> onRequest(RequestContext context, String id) async {
   final handler = webSocketHandler((channel, protocol) {
     // Here we want to receive the stones that are being thrown.
     channel.stream.listen((message) {
-      print('got message $message');
       // We convert the message from json string to an actual message
       final map = jsonDecode(message as String) as Map<String, Object?>;
       // Now we have the message as a Dart map. Let's convert it into a message class with Freezed.
@@ -52,20 +58,38 @@ Future<Response> onRequest(RequestContext context, String id) async {
         case MessageType.join:
           {
             // Let's see if the game already exists in the datastructure.
-            final index = gameIndex(id);
+            final index = gameIndex(messageObj.lobby!.id);
             // -1 means that the index wasn't found.
             if (index != -1) {
-              // If the game already exists, there is also player one. Let's add the player two.
-              games[index] = games[index].copyWith(playerTwo: messageObj.user);
+              // First, update the game state by adding the another player there.
+              games[index] = (
+                state: games[index].state.copyWith(playerTwo: messageObj.user),
+                game: Game(playerOne: games[index].state.playerOne!, playerTwo: messageObj.user!),
+              );
+              // Already return the current game state back there
+              channel.sink.add(jsonEncode(games[index].state.toJson()));
+              gameLoop(lobbyID: messageObj.lobby!.id, channel: channel);
             } else {
               // The game doesn't exist, so this is the first player creating it. Let's add the game state.
-              games.add(GameState(playerOne: messageObj.user, lobby: messageObj.lobby));
-              // Let's kickstart the game loop itself now that the game state has been created.
-              gameLoop(lobbyID: id, channel: channel);
+              games.add((state: GameState(playerOne: messageObj.user, lobby: messageObj.lobby), game: null));
+              // Add the game to the main loop to be messaged every 10 milliseconds.
+              channels.add((channelID: id, lobbyID: messageObj.lobby!.id, channel: channel));
+              gameLoop(lobbyID: messageObj.lobby!.id, channel: channel);
             }
           }
         case MessageType.slide:
-        // TODO: Handle this case.
+          {
+            // Let's see if the game already exists in the datastructure.
+            final index = gameIndex(messageObj.lobby!.id);
+            // -1 means that the index wasn't found.
+            if (index != -1) {
+              final game = games[index].game;
+              final stones = game!.stones;
+              // Search a stone from the game that is this user's stone and that is still in the starting position
+              final selectedStone = stones.firstWhere((element) => (element.user == messageObj.user) && (element.x == 548.64) && (element.y == 250));
+              selectedStone.slide(messageObj.slide!.angle, messageObj.slide!.speed);
+            }
+          }
       }
     });
   });
