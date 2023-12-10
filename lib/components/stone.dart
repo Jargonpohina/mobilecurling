@@ -14,6 +14,8 @@ class Stone {
   User? user;
   static const double radius = 14.53;
   static const double mass = 19.96;
+  double angle = 0.0;
+  double speed = 0.0;
 
   /// helper function to check if colliding with another stone
   bool isCollidingWith(Stone otherStone) {
@@ -24,6 +26,11 @@ class Stone {
   }
 
   void slide(double angle, double speed) {
+    this.angle = angle;
+    this.speed = speed;
+  }
+
+  void update() {
     // Laske X- ja Y-suuntaiset nopeudet kulman ja alkunopeuden perusteella
     // Lasketaan vain jarrutusta.
     // Kulmien nopeuksien jälkeen laske kitkan vaikutus X- ja Y-nopeuksiin ajan
@@ -50,6 +57,10 @@ class Stone {
     if (speedY.abs() < 0.01) {
       speedY = 0.0;
     }
+
+    // TODO: Laske uusien koordinaattien pysyminen koordinaatistossa
+    // - laske tähän kimpoaminen reunoista ja
+    // - laske kimpoaminen muista kiekoista
 
     // new positions of coordinates
     x = x! + speedX;

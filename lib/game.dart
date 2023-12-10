@@ -15,7 +15,8 @@ class Game {
     initStones();
 
     // start the tick system
-    _timer = Timer.periodic(Duration(milliseconds: frameDuration.toInt()), _update);
+    _timer =
+        Timer.periodic(Duration(milliseconds: frameDuration.toInt()), _update);
   }
 
   // Tick system for the game:
@@ -28,7 +29,8 @@ class Game {
 
   void _update(Timer timer) {
     final DateTime currentTime = DateTime.now();
-    final double deltaTime = currentTime.difference(_lastFrameTime).inMilliseconds / 1000.0;
+    final double deltaTime =
+        currentTime.difference(_lastFrameTime).inMilliseconds / 1000.0;
 
     update(deltaTime);
 
@@ -50,7 +52,9 @@ class Game {
 
   /// Updates the game based on ticks
   void update(double deltaTime) {
-    print("Game logic: $deltaTime");
+    for (final stone in stones) {
+      stone.update();
+    }
   }
 
   /// Stops the gameloop
