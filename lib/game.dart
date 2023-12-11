@@ -105,12 +105,13 @@ class Game {
       }
     }
 
-    // first user won
-    if (firstClosest! < secondClosest!) {
-      return first;
-    } else if (firstClosest > secondClosest) {
-      // second user won
-      return second;
+    if (firstClosest != null && secondClosest != null) {
+      if (firstClosest < secondClosest) {
+        return first;
+      }
+      if (firstClosest > secondClosest) {
+        return second;
+      }
     }
     // if it's a tie
     return null;
