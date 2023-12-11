@@ -85,7 +85,7 @@ class Game {
     double? firstClosest = null;
     double? secondClosest = null;
 
-    for (final stone in stones) {
+    for (final stone in activeStones) {
       double distance = sqrt(
         pow(stone.x - sheet.goalAreaCenterWidth, 2) +
             pow(stone.y - sheet.goalAreaCenterHeight, 2),
