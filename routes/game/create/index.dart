@@ -7,8 +7,8 @@ import 'package:dart_frog/dart_frog.dart';
 import 'package:mobilecurling/core/shared_classes/game_state/game_state.dart';
 import 'package:mobilecurling/core/shared_classes/message/message.dart';
 
-import '../../main.dart';
-import '[id].dart';
+import '../../../main.dart';
+import '../[id].dart';
 
 /// Endpoint for creating a new game
 Future<Response> onRequest(RequestContext context) async {
