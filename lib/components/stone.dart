@@ -28,16 +28,20 @@ class Stone {
 
   /// helper function to check if stone will collide during the next timestamp
   bool isGoingToCollideWithStone(Stone otherStone, double deltaTime) {
+    //print("calculcating if going to collide.");
     double futureX = x! + speedX * deltaTime;
     double futureY = y! + speedY * deltaTime;
 
-    // onkohan tässä yksiköt ihan ok hmm
-    // nopeuden komponentit on mallia cm/s? ja deltaTime on [milliseconds/1000]
+    //print('our future coords will be: $futureX, $futureY');
+
     double otherFutureX = otherStone.x! + otherStone.speedX * deltaTime;
     double otherFutureY = otherStone.y! + otherStone.speedY * deltaTime;
+    //print('other stones future coords will be: $otherFutureX, $otherFutureY');
 
     double distance =
         sqrt(pow(futureX - otherFutureX, 2) + pow(futureY - otherFutureY, 2));
+
+    //print('Distance: $distance');
 
     // print('distance in the next timestamp: $distance');
 
@@ -46,6 +50,7 @@ class Stone {
 
   /// phys function to handle collisions between stones
   void handleStoneCollision(Stone otherStone) {
+    // print('Collision detected');
     //print('Calculating collision from $id');
     //print('Current stone: $x, $y');
     //print('Other stone: ${otherStone.x}, ${otherStone.y}');
@@ -60,21 +65,35 @@ class Stone {
     final collAngle = atan2(dy, dx);
 
     final thisSpeed = sqrt(pow(speedX, 2) + pow(speedY, 2));
-    final otherSpeed =
-        sqrt(pow(otherStone.speedX, 2) + pow(otherStone.speedY, 2));
+    //final otherSpeed = sqrt(pow(otherStone.speedX, 2) + pow(otherStone.speedY, 2));
 
-    final thisDirection = atan2(speedY, speedX);
-    final otherDirection = atan2(otherStone.speedY, otherStone.speedX);
+    //final thisDirection = atan2(speedY, speedX);
+    //final otherDirection = atan2(otherStone.speedY, otherStone.speedX);
+    final otherDirection = atan2(speedY, speedX);
 
     // speeds after collision as they have same masses
-    final thisNewSpeed = otherSpeed;
+    final thisNewSpeed = 0.0; // this is actually zero
     final otherNewSpeed = thisSpeed;
 
-    speedX = thisNewSpeed * cos(thisDirection - collAngle);
-    speedY = thisNewSpeed * sin(thisDirection - collAngle);
+    //speedX = thisNewSpeed * cos(thisDirection - collAngle);
+    //speedY = thisNewSpeed * sin(thisDirection - collAngle);
+    speedX = 0.0;
+    speedY = 0.0;
 
     otherStone.speedX = otherNewSpeed * cos(otherDirection - collAngle);
     otherStone.speedY = otherNewSpeed * sin(otherDirection - collAngle);
+
+    // print('Other stone coords before adjust: ${otherStone.x}, ${otherStone.y}');
+
+    // we nudge the collided stone a bit away to avoid collision loop with
+    // the initial stone
+    otherStone.x = otherStone.x! + otherStone.speedX;
+    otherStone.y = otherStone.y! + otherStone.speedY;
+
+    //print('Other stone coords after adjust: ${otherStone.x}, ${otherStone.y}');
+
+    //print('Other stone (${otherStone.id}) will continue to angle $otherDirection with speed:');
+    // print('${otherStone.speedX}, ${otherStone.speedY}');
   }
 
   /// checks if the stone is within boundaries and fixes pos & vel if needed
@@ -156,6 +175,7 @@ class Stone {
       }
     } else {
       speed = 0.0; // do NOT remove this.
+      //print('stone $id stopped.');
     }
     x = x! + speedX;
     y = y! + speedY;

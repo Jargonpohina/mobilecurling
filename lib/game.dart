@@ -12,7 +12,7 @@ class Game {
   List<Stone> activeStones = [];
 
   /// List for the users in the game
-  List<User> users = []; // nämä pitää repiä lobbyltä
+  List<User> users = [];
 
   /// Creating the game instance
   Game({required User playerOne, required User playerTwo}) {
@@ -35,7 +35,7 @@ class Game {
   void _update(Timer timer) {
     final DateTime currentTime = DateTime.now();
     final double deltaTime =
-        currentTime.difference(_lastFrameTime).inMilliseconds / 1000.0;
+        currentTime.difference(_lastFrameTime).inMilliseconds / 1000.0; // sec
 
     update(deltaTime);
 
