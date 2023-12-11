@@ -21,40 +21,27 @@ class Stone {
   // double? x; // original: 548.64
   // double? y; // original: 250
   double angle = 0.0;
-  double speed = 0.0;
-  double speedX = 0.0;
-  double speedY = 0.0;
+  double velocity = 0.0;
+  double velocityX = 0.0;
+  double velocityY = 0.0;
   bool started = false;
 
   /// helper function to check if stone will collide during the next timestamp
   bool isGoingToCollideWithStone(Stone otherStone, double deltaTime) {
-    //print("calculcating if going to collide.");
-    double futureX = x! + speedX * deltaTime;
-    double futureY = y! + speedY * deltaTime;
+    double futureX = x! + velocityX * deltaTime;
+    double futureY = y! + velocityY * deltaTime;
 
-    //print('our future coords will be: $futureX, $futureY');
-
-    double otherFutureX = otherStone.x! + otherStone.speedX * deltaTime;
-    double otherFutureY = otherStone.y! + otherStone.speedY * deltaTime;
-    //print('other stones future coords will be: $otherFutureX, $otherFutureY');
+    double otherFutureX = otherStone.x! + otherStone.velocityX * deltaTime;
+    double otherFutureY = otherStone.y! + otherStone.velocityY * deltaTime;
 
     double distance =
         sqrt(pow(futureX - otherFutureX, 2) + pow(futureY - otherFutureY, 2));
-
-    //print('Distance: $distance');
-
-    // print('distance in the next timestamp: $distance');
 
     return distance < 2 * radius; // radius + otherStone.radius
   }
 
   /// phys function to handle collisions between stones
   void handleStoneCollision(Stone otherStone) {
-    // print('Collision detected');
-    //print('Calculating collision from $id');
-    //print('Current stone: $x, $y');
-    //print('Other stone: ${otherStone.x}, ${otherStone.y}');
-
     /// difference between stones' x-coords
     final dx = otherStone.x! - x!;
 
@@ -64,68 +51,94 @@ class Stone {
     /// collision angle based on coord differences
     final collAngle = atan2(dy, dx);
 
-    final thisSpeed = sqrt(pow(speedX, 2) + pow(speedY, 2));
-    //final otherSpeed = sqrt(pow(otherStone.speedX, 2) + pow(otherStone.speedY, 2));
+    final thisvelocity = sqrt(pow(velocityX, 2) + pow(velocityY, 2));
+    //final othervelocity = sqrt(pow(otherStone.velocityX, 2) + pow(otherStone.velocityY, 2));
 
-    //final thisDirection = atan2(speedY, speedX);
-    //final otherDirection = atan2(otherStone.speedY, otherStone.speedX);
-    final otherDirection = atan2(speedY, speedX);
+    //final thisDirection = atan2(velocityY, velocityX);
+    //final otherDirection = atan2(otherStone.velocityY, otherStone.velocityX);
+    final otherDirection = atan2(velocityY, velocityX);
 
-    // speeds after collision as they have same masses
-    final thisNewSpeed = 0.0; // this is actually zero
-    final otherNewSpeed = thisSpeed;
+    // velocitys after collision as they have same masses
+    final thisNewvelocity = 0.0; // this is actually zero
+    final otherNewvelocity = thisvelocity;
 
-    //speedX = thisNewSpeed * cos(thisDirection - collAngle);
-    //speedY = thisNewSpeed * sin(thisDirection - collAngle);
-    speedX = 0.0;
-    speedY = 0.0;
+    //velocityX = thisNewvelocity * cos(thisDirection - collAngle);
+    //velocityY = thisNewvelocity * sin(thisDirection - collAngle);
+    velocityX = 0.0;
+    velocityY = 0.0;
 
-    otherStone.speedX = otherNewSpeed * cos(otherDirection - collAngle);
-    otherStone.speedY = otherNewSpeed * sin(otherDirection - collAngle);
-
-    // print('Other stone coords before adjust: ${otherStone.x}, ${otherStone.y}');
+    otherStone.velocityX = otherNewvelocity * cos(otherDirection - collAngle);
+    otherStone.velocityY = otherNewvelocity * sin(otherDirection - collAngle);
 
     // we nudge the collided stone a bit away to avoid collision loop with
     // the initial stone
-    otherStone.x = otherStone.x! + otherStone.speedX;
-    otherStone.y = otherStone.y! + otherStone.speedY;
+    otherStone.x = otherStone.x! + otherStone.velocityX;
+    otherStone.y = otherStone.y! + otherStone.velocityY;
+  }
 
-    //print('Other stone coords after adjust: ${otherStone.x}, ${otherStone.y}');
-
-    //print('Other stone (${otherStone.id}) will continue to angle $otherDirection with speed:');
-    // print('${otherStone.speedX}, ${otherStone.speedY}');
+  /// magic
+  void handleStoneCollisionBetter(Stone otherStone) {
+    final dx = otherStone.x - x;
+    final dy = otherStone.y - y;
+    final collAngle = atan2(dy, dx);
+    final magnitude = sqrt(pow(velocityX, 2) + pow(velocityY, 2));
+    final collVectorX = velocityX / magnitude;
+    final collVectorY = velocityY / magnitude;
+    final thisNewVelocity = ((velocityX - otherStone.velocityX) * collVectorX +
+            (velocityY - otherStone.velocityY) * collVectorY) /
+        cos(collAngle);
+    final thisNewAngle = (collVectorX * (velocityY - otherStone.velocityY) -
+            collVectorY * (velocityX - otherStone.velocityX)) /
+        (collVectorX * (velocityX - otherStone.velocityX) +
+            collVectorY * (velocityY - otherStone.velocityY));
+    final otherNewVelocity = 2 *
+            ((velocityX * collVectorX + velocityY * collVectorY) /
+                cos(collAngle)) *
+            collVectorX +
+        ((velocityX * collVectorX + velocityY * collVectorY) / cos(collAngle)) *
+            collVectorY -
+        magnitude;
+    final otherNewAngle = (collVectorX * velocityY - collVectorY * velocityX) /
+        (collVectorX * velocityX + collVectorY * velocityY);
+    velocityX = thisNewVelocity * cos(thisNewAngle);
+    velocityY = thisNewVelocity * sin(thisNewAngle);
+    x = x + velocityX;
+    y = y + velocityY;
+    otherStone.velocityX = otherNewVelocity * cos(otherNewAngle);
+    otherStone.velocityY = otherNewVelocity * sin(otherNewAngle);
+    otherStone.x = otherStone.x + otherStone.velocityX;
+    otherStone.y = otherStone.y + otherStone.velocityY;
   }
 
   /// checks if the stone is within boundaries and fixes pos & vel if needed
   void checkBoundaries() {
-    // print('Checking $id boundaries: $x $y');
     if (x! - radius < sheet.left) {
       x = radius;
-      speedX = -speedX;
+      velocityX = -velocityX;
     }
     if (x! + radius > sheet.right) {
       x = sheet.right - radius;
-      speedX = -speedX;
+      velocityX = -velocityX;
     }
     if (y! - radius < sheet.top) {
       y = radius;
-      speedY = -speedY;
+      velocityY = -velocityY;
     }
     if (y! + radius > sheet.bottom) {
       y = sheet.bottom - radius;
-      speedY = -speedY;
+      velocityY = -velocityY;
     }
   }
 
   /// initialize the current stone
-  void slide(double angle, double speed) {
+  void slide(double angle, double velocity) {
     this.angle = angle;
-    this.speed = speed;
+    this.velocity = velocity;
     double radians = angle * (pi / 180);
     if (!started) {
       started = true;
-      speedX = speed * cos(radians);
-      speedY = speed * sin(radians);
+      velocityX = velocity * cos(radians);
+      velocityY = velocity * sin(radians);
     }
   }
 
@@ -137,47 +150,46 @@ class Stone {
     double dragX;
     double dragY;
 
-    if (speedX.abs() > 0) {
-      dragX = 0.5 * sheet.dynamicFriction * pow(speedX, 2) / mass;
+    if (velocityX.abs() > 0) {
+      dragX = 0.5 * sheet.dynamicFriction * pow(velocityX, 2) / mass;
       if (dragX < 0.1) dragX = 0.1; // workaround to make the simulation end
-      if (speedX < 0) {
-        speedX += dragX;
+      if (velocityX < 0) {
+        velocityX += dragX;
       } else {
-        speedX -= dragX;
+        velocityX -= dragX;
       }
     }
 
-    if (speedY.abs() > 0) {
-      dragY = 0.5 * sheet.dynamicFriction * pow(speedY, 2) / mass;
+    if (velocityY.abs() > 0) {
+      dragY = 0.5 * sheet.dynamicFriction * pow(velocityY, 2) / mass;
       if (dragY < 0.1) dragY = 0.1; // workaround to make the simulation end
-      if (speedY < 0) {
-        speedY += dragY;
+      if (velocityY < 0) {
+        velocityY += dragY;
       } else {
-        speedY -= dragY;
+        velocityY -= dragY;
       }
     }
 
-    if (speedX.abs() < 0.05) {
-      speedX = 0.0;
+    if (velocityX.abs() < 0.05) {
+      velocityX = 0.0;
     }
 
-    if (speedY.abs() < 0.05) {
-      speedY = 0.0;
+    if (velocityY.abs() < 0.05) {
+      velocityY = 0.0;
     }
 
-    if (speedX > 0.0 || speedY > 0.0) {
+    if (velocityX > 0.0 || velocityY > 0.0) {
       checkBoundaries();
       for (final otherStone in activeStones) {
         if (otherStone != this &&
             isGoingToCollideWithStone(otherStone, deltaTime)) {
-          handleStoneCollision(otherStone);
+          handleStoneCollisionBetter(otherStone);
         }
       }
     } else {
-      speed = 0.0; // do NOT remove this.
-      //print('stone $id stopped.');
+      velocity = 0.0; // do NOT remove this.
     }
-    x = x! + speedX;
-    y = y! + speedY;
+    x = x! + velocityX;
+    y = y! + velocityY;
   }
 }
