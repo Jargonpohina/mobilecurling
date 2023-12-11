@@ -98,22 +98,28 @@ Future<Response> onRequest(RequestContext context, String id) async {
             final index = gameIndex(messageObj.lobby!.id);
             // -1 means that the index wasn't found.
             if (index != -1) {
-              // First, update the game state by adding the another player there.
-              games[index] = (
-                state: games[index].state.copyWith(
-                      playerTwo: messageObj.user,
-                      playerInTurn: messageObj.user,
-                    ),
-                game: Game(playerOne: games[index].state.playerOne!, playerTwo: messageObj.user!),
-              );
+              // Add the first player if there is no one
+              if (games[index].state.playerOne == null) {
+                games[index] = (
+                  state: games[index].state.copyWith(
+                        playerOne: messageObj.user,
+                        playerInTurn: messageObj.user,
+                      ),
+                  game: null,
+                );
+              } else {
+                // If first player is already added, add the second one and start the game with both users in
+                games[index] = (
+                  state: games[index].state.copyWith(
+                        playerTwo: messageObj.user,
+                      ),
+                  game: Game(playerOne: games[index].state.playerOne!, playerTwo: messageObj.user!),
+                );
+                //  Start the loop
+                gameLoop(lobbyID: messageObj.lobby!.id, channel: channel);
+              }
               // Already return the current game state back there
               channel.sink.add(jsonEncode(games[index].state.toJson()));
-              gameLoop(lobbyID: messageObj.lobby!.id, channel: channel);
-            } else {
-              // The game doesn't exist, so this is the first player creating it. Let's add the game state.
-              games.add((state: GameState(playerOne: messageObj.user, lobby: messageObj.lobby), game: null));
-              // Add the game to the main loop to be messaged every 10 milliseconds.
-              gameLoop(lobbyID: messageObj.lobby!.id, channel: channel);
             }
           }
         case MessageType.slide:
