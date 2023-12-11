@@ -1,4 +1,4 @@
-// ignore_for_file: cascade_invocations, lines_longer_than_80_chars, avoid_bool_literals_in_conditional_expressions, inference_failure_on_function_invocation
+// ignore_for_file: cascade_invocations, lines_longer_than_80_chars, avoid_bool_literals_in_conditional_expressions, inference_failure_on_function_invocation, omit_local_variable_types
 
 import 'dart:convert';
 
@@ -19,9 +19,22 @@ int gameIndex(String lobbyID) {
 
 /// Reflects the game world into the game state simply by copying the stone data into StoneAPI objects.
 GameState reflectGameWorld({required GameState gameState, required Game game}) {
+  int playerOneScore = 0;
+  int playerTwoScore = 0;
+  final winner = game.winner();
+  if (winner != null) {
+    if (winner == gameState.playerOne) {
+      playerOneScore = 1;
+    }
+    if (winner == gameState.playerTwo) {
+      playerTwoScore = 1;
+    }
+  }
   return gameState.copyWith(
     stones: game.stones.map((e) => StoneAPI(x: e.x, y: e.y, started: e.started, id: e.id!, user: e.user)).toList(),
     canSlide: !game.rollingStones(),
+    playerOneScore: playerOneScore,
+    playerTwoScore: playerTwoScore,
     gameState: gameState.gameState == State.quitting
         ? State.quitting
         : game.activeStones.length >= 8
@@ -100,6 +113,7 @@ Future<Response> onRequest(RequestContext context, String id) async {
             if (index != -1) {
               // Add the first player if there is no one
               if (games[index].state.playerOne == null) {
+                /*
                 games[index] = (
                   state: games[index].state.copyWith(
                         playerOne: messageObj.user,
@@ -107,16 +121,19 @@ Future<Response> onRequest(RequestContext context, String id) async {
                       ),
                   game: null,
                 );
+                */
               } else {
                 // If first player is already added, add the second one and start the game with both users in
-                games[index] = (
-                  state: games[index].state.copyWith(
-                        playerTwo: messageObj.user,
-                      ),
-                  game: Game(playerOne: games[index].state.playerOne!, playerTwo: messageObj.user!),
-                );
-                //  Start the loop
-                gameLoop(lobbyID: messageObj.lobby!.id, channel: channel);
+                if (games[index].state.playerOne != messageObj.user) {
+                  games[index] = (
+                    state: games[index].state.copyWith(
+                          playerTwo: messageObj.user,
+                        ),
+                    game: Game(playerOne: games[index].state.playerOne!, playerTwo: messageObj.user!),
+                  );
+                  //  Start the loop
+                  gameLoop(lobbyID: messageObj.lobby!.id, channel: channel);
+                }
               }
               // Already return the current game state back there
               channel.sink.add(jsonEncode(games[index].state.toJson()));
