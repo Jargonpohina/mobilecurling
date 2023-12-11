@@ -122,6 +122,7 @@ Future<Response> onRequest(RequestContext context, String id) async {
                   game: null,
                 );
                 */
+                gameLoop(lobbyID: messageObj.lobby!.id, channel: channel);
               } else {
                 // If first player is already added, add the second one and start the game with both users in
                 if (games[index].state.playerOne != messageObj.user) {
@@ -131,9 +132,8 @@ Future<Response> onRequest(RequestContext context, String id) async {
                         ),
                     game: Game(playerOne: games[index].state.playerOne!, playerTwo: messageObj.user!),
                   );
-                  //  Start the loop
-                  gameLoop(lobbyID: messageObj.lobby!.id, channel: channel);
                 }
+                gameLoop(lobbyID: messageObj.lobby!.id, channel: channel);
               }
               // Already return the current game state back there
               channel.sink.add(jsonEncode(games[index].state.toJson()));
