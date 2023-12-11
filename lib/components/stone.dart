@@ -67,14 +67,14 @@ class Stone {
     final otherDirection = atan2(otherStone.speedY, otherStone.speedX);
 
     // speeds after collision as they have same masses
-    final thisSpeed1 = otherSpeed;
-    final otherSpeed1 = thisSpeed;
+    final thisNewSpeed = otherSpeed;
+    final otherNewSpeed = thisSpeed;
 
-    speedX = thisSpeed1 * cos(thisDirection - collAngle);
-    speedY = thisSpeed1 * sin(otherDirection - collAngle);
+    speedX = thisNewSpeed * cos(thisDirection - collAngle);
+    speedY = thisNewSpeed * sin(thisDirection - collAngle);
 
-    otherStone.speedX = otherSpeed1 * cos(otherDirection - collAngle);
-    otherStone.speedY = otherSpeed1 * sin(otherDirection - collAngle);
+    otherStone.speedX = otherNewSpeed * cos(otherDirection - collAngle);
+    otherStone.speedY = otherNewSpeed * sin(otherDirection - collAngle);
   }
 
   /// checks if the stone is within boundaries and fixes pos & vel if needed
@@ -112,6 +112,9 @@ class Stone {
 
   /// low-quality phys engine by tikibeni (SheetPhysX)
   void update(double deltaTime, List<Stone> activeStones) {
+    // Problems:
+    // - collision almost always results in both zero velocities
+    // - sometimes collision throws the stone in totally random direction
     double dragX;
     double dragY;
 
