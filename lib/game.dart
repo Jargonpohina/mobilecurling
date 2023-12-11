@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:math';
 // import 'dart:io';
+import 'package:mobilecurling/components/sheet.dart';
 import 'package:mobilecurling/components/stone.dart';
 import 'package:mobilecurling/core/shared_classes/user/user.dart';
 
@@ -13,6 +15,8 @@ class Game {
 
   /// List for the users in the game
   List<User> users = [];
+
+  Sheet sheet = Sheet();
 
   /// Creating the game instance
   Game({required User playerOne, required User playerTwo}) {
@@ -72,6 +76,44 @@ class Game {
       }
     }
     return false;
+  }
+
+  /// calculating the winner
+  User? winner() {
+    User first = users.first;
+    User second = users.last;
+    double? firstClosest = null;
+    double? secondClosest = null;
+
+    for (final stone in stones) {
+      double distance = sqrt(
+        pow(stone.x - sheet.goalAreaCenterWidth, 2) +
+            pow(stone.y - sheet.goalAreaCenterHeight, 2),
+      );
+      if (stone.user == first) {
+        if (firstClosest == null) {
+          firstClosest = distance;
+        } else if (distance < firstClosest) {
+          firstClosest = distance;
+        }
+      } else {
+        if (secondClosest == null) {
+          secondClosest = distance;
+        } else if (distance < secondClosest) {
+          secondClosest = distance;
+        }
+      }
+    }
+
+    // first user won
+    if (firstClosest! < secondClosest!) {
+      return first;
+    } else if (firstClosest > secondClosest) {
+      // second user won
+      return second;
+    }
+    // if it's a tie
+    return null;
   }
 
   /// Stops the gameloop
