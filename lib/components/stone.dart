@@ -151,6 +151,8 @@ class Stone {
           handleStoneCollision(otherStone);
         }
       }
+    } else {
+      speed = 0.0; // do NOT remove this.
     }
     x = x! + speedX;
     y = y! + speedY;
