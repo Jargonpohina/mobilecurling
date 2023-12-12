@@ -7,20 +7,19 @@ import 'package:uuid/uuid.dart';
 class Stone {
   /// Constructor
   // For debugging purposes use the following format:
-  Stone({required this.user, required this.x, required this.y})
-      : id = Uuid().v4();
-  //Stone({required this.user}) : id = const Uuid().v4();
+  // Stone({required this.user, required this.x, required this.y})
+  //    : id = Uuid().v4();
+  Stone({required this.user}) : id = const Uuid().v4();
   Sheet sheet = Sheet();
   User? user;
   final String id;
   // actually 14.53cm, but client scales to 64x64 sprite
   static const double radius = 32;
   static const double mass = 19.96;
-  // double x = 548.64;
-  // double y = 250;
-  double? x; // original: 548.64
-  double? y; // original: 250
-  double angle = 0.0;
+  double x = 548.64;
+  double y = 250;
+  //double? x; // original: 548.64
+  //double? y; // original: 250
   double velocity = 0.0;
   double velocityX = 0.0;
   double velocityY = 0.0;
@@ -114,13 +113,11 @@ class Stone {
     x = x! + velocityX;
     y = y! + velocityY;
     velocity = thisNewVelocity;
-    angle = thisNewAngle;
     otherStone.velocityX = otherNewVelocity * cos(otherNewAngle);
     otherStone.velocityY = otherNewVelocity * sin(otherNewAngle);
     otherStone.x = otherStone.x! + otherStone.velocityX;
     otherStone.y = otherStone.y! + otherStone.velocityY;
     otherStone.velocity = thisNewVelocity;
-    otherStone.angle = otherNewAngle;
     print('Stone $id (this) new speed: $velocityX, $velocityY');
     print(
         'Stone ${otherStone.id} (other) new speed: ${otherStone.velocityX}, ${otherStone.velocityY}');
@@ -132,10 +129,9 @@ class Stone {
   void handleStoneCollisionWithVelocities(Stone otherStone) {
     collisionLocks.add(otherStone.id);
     otherStone.collisionLocks.add(id);
-    print('Collision detected between $id and ${otherStone.id}');
-    print('Stone $id (this) old speed: $velocityX, $velocityY');
-    print(
-        'Stone ${otherStone.id} (other) old speed: ${otherStone.velocityX}, ${otherStone.velocityY}');
+    //print('Collision detected between $id (THIS) and ${otherStone.id} (OTHER)');
+    //print('Stone THIS old speed: $velocityX, $velocityY');
+    //print()'Stone OTHER old speed: ${otherStone.velocityX}, ${otherStone.velocityY}');
 
     final relVelX = velocityX - otherStone.velocityX;
     final relVelY = velocityY - otherStone.velocityY;
@@ -145,26 +141,24 @@ class Stone {
     final thisNewScalarVel = 0.5 * relVelX * collX + relVelY * collY;
     final thisNewVelocityX = collX * thisNewScalarVel;
     final thisNewVelocityY = collY * thisNewScalarVel;
-    final thisNewAngle = (collX * relVelY - collY * relVelX) /
-        (collX * relVelX + collY * relVelY);
+    // final thisNewAngle = (collX * relVelY - collY * relVelX) / (collX * relVelX + collY * relVelY);
     final otherNewScalarVel = 0.5 * relVelX * (-collX) + relVelY * (-collY);
-    final otherNewVelocityX = -collX * otherNewScalarVel;
-    final otherNewVelocityY = -collY * otherNewScalarVel;
-    final otherNewAngle = ((-collX * relVelY) - (-collY * relVelX)) /
-        ((-collX * relVelX) + (-collY * relVelY));
+    final otherNewVelocityX = -(-collX * otherNewScalarVel);
+    final otherNewVelocityY = -(-collY * otherNewScalarVel);
+    // final otherNewAngle = ((-collX * relVelY) - (-collY * relVelX)) / ((-collX * relVelX) + (-collY * relVelY));
 
     velocityX = thisNewVelocityX;
     velocityY = thisNewVelocityY;
     x = x! + velocityX;
     y = y! + velocityY;
+    //print('Stone THIS new speed: $velocityX, $velocityY');
+    //print('Moving THIS to $x, $y');
     otherStone.velocityX = otherNewVelocityX;
     otherStone.velocityY = otherNewVelocityY;
     otherStone.x = otherStone.x! + otherStone.velocityX;
     otherStone.y = otherStone.y! + otherStone.velocityY;
-
-    print('Stone $id (this) new speed: $velocityX, $velocityY');
-    print(
-        'Stone ${otherStone.id} (other) new speed: ${otherStone.velocityX}, ${otherStone.velocityY}');
+    //print('Stone OTHER new speed: ${otherStone.velocityX}, ${otherStone.velocityY}');
+    //print('Moving OTHER to ${otherStone.x}, ${otherStone.y}');
   }
 
   /// checks if the stone is within boundaries and fixes pos & vel if needed
@@ -189,7 +183,6 @@ class Stone {
 
   /// initialize the current stone
   void slide(double angle, double velocity) {
-    this.angle = angle;
     this.velocity = velocity;
     double radians = angle * (pi / 180);
     if (!started) {
@@ -238,7 +231,6 @@ class Stone {
         if (otherStone != this) {
           final willCollide = isGoingToCollideWithStone(otherStone, deltaTime);
           if (willCollide && !collisionLocks.contains(otherStone.id)) {
-            // handleStoneCollisionBetter(otherStone);
             handleStoneCollisionWithVelocities(otherStone);
           } else if (!willCollide && collisionLocks.contains(otherStone.id)) {
             collisionLocks.remove(otherStone.id);
@@ -248,15 +240,12 @@ class Stone {
       }
       x = x! + velocityX;
       y = y! + velocityY;
-      print('$id moving to $x, $y');
-      print('$id velocity: $velocityX, $velocityY');
-      print('');
-      print('');
+      //print('$id moving to $x, $y');
+      //print('$id velocity: $velocityX, $velocityY');
+      //print('');
+      //print('');
     } else {
       velocity = 0.0; // do NOT remove this.
-      print('$id stopped.');
-      print('');
-      print('');
     }
   }
 }

@@ -54,8 +54,8 @@ class Game {
   void initStones() {
     for (User user in users) {
       for (int i = 0; i < 4; i++) {
-        stones.add(Stone(user: user, x: 548.64, y: 250));
-        // stones.add(Stone(user: user));
+        //stones.add(Stone(user: user, x: 548.64, y: 250));
+        stones.add(Stone(user: user));
       }
     }
   }
@@ -63,7 +63,6 @@ class Game {
   /// Updates the game based on ticks
   void update(double deltaTime) {
     for (final stone in activeStones) {
-      print('updating stone ${stone.id}');
       stone.update(deltaTime, activeStones);
     }
   }
@@ -124,7 +123,7 @@ class Game {
 }
 
 // Debugger:
-
+/*
 void main() {
   final test = Game(
     playerOne: const User(username: 'test', password: 'test'),
@@ -132,11 +131,15 @@ void main() {
   );
 
   final estekivi = Stone(user: null, x: 4023.804789965249, y: 250);
+  final estekivi1 = Stone(user: null, x: 4060.2772, y: 213.887);
   test.activeStones.add(estekivi);
   estekivi.slide(0, 0);
+  test.activeStones.add(estekivi1);
+  estekivi1.slide(0, 0);
 
   final kivi = test.stones.first;
   test.activeStones.add(kivi);
   // arvot [0, 40] kolisee
   kivi.slide(40, 270);
 }
+*/
