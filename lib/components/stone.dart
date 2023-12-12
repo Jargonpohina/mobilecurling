@@ -143,8 +143,8 @@ class Stone {
     final thisNewVelocityY = collY * thisNewScalarVel;
     // final thisNewAngle = (collX * relVelY - collY * relVelX) / (collX * relVelX + collY * relVelY);
     final otherNewScalarVel = 0.5 * relVelX * (-collX) + relVelY * (-collY);
-    final otherNewVelocityX = -(-collX * otherNewScalarVel);
-    final otherNewVelocityY = -(-collY * otherNewScalarVel);
+    final otherNewVelocityX = -collX * otherNewScalarVel;
+    final otherNewVelocityY = -collY * otherNewScalarVel;
     // final otherNewAngle = ((-collX * relVelY) - (-collY * relVelX)) / ((-collX * relVelX) + (-collY * relVelY));
 
     velocityX = thisNewVelocityX;
