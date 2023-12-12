@@ -12,7 +12,7 @@ class Stone {
   //Stone({required this.user}) : id = const Uuid().v4();
   Sheet sheet = Sheet();
   User? user;
-  final String? id;
+  final String id;
   // actually 14.53cm, but client scales to 64x64 sprite
   static const double radius = 32;
   static const double mass = 19.96;
@@ -128,6 +128,8 @@ class Stone {
   }
 
   void handleStoneCollisionWithVelocities(Stone otherStone) {
+    collisionLock = otherStone.id;
+    otherStone.collisionLock = id;
     print('Collision detected between $id and ${otherStone.id}');
     print('Stone $id (this) old speed: $velocityX, $velocityY');
     print(
@@ -231,9 +233,14 @@ class Stone {
     if (velocityX > 0.0 || velocityY > 0.0) {
       checkBoundaries();
       for (final otherStone in activeStones) {
-        if (otherStone != this &&
-            isGoingToCollideWithStone(otherStone, deltaTime)) {
-          handleStoneCollisionWithVelocities(otherStone);
+        if (otherStone != this) {
+          bool willCollide = isGoingToCollideWithStone(otherStone, deltaTime);
+          if (willCollide && collisionLock != otherStone.id) {
+            handleStoneCollisionWithVelocities(otherStone);
+          } else if (!willCollide && collisionLock == otherStone.id) {
+            collisionLock = '';
+            otherStone.collisionLock = '';
+          }
         }
       }
       x = x! + velocityX;
