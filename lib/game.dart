@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-// import 'dart:io';
 import 'package:mobilecurling/components/sheet.dart';
 import 'package:mobilecurling/components/stone.dart';
 import 'package:mobilecurling/core/shared_classes/user/user.dart';
@@ -55,8 +54,8 @@ class Game {
   void initStones() {
     for (User user in users) {
       for (int i = 0; i < 4; i++) {
-        // for debugging: stones.add(Stone(user: user, x: 548.64, y: 250));
-        stones.add(Stone(user: user));
+        stones.add(Stone(user: user, x: 548.64, y: 250));
+        // stones.add(Stone(user: user));
       }
     }
   }
@@ -64,6 +63,7 @@ class Game {
   /// Updates the game based on ticks
   void update(double deltaTime) {
     for (final stone in activeStones) {
+      print('updating stone ${stone.id}');
       stone.update(deltaTime, activeStones);
     }
   }
@@ -71,7 +71,7 @@ class Game {
   /// helper function to check if game is still running
   bool rollingStones() {
     for (final stone in stones) {
-      if (stone.speed > 0) {
+      if (stone.velocity > 0) {
         return true;
       }
     }
@@ -87,8 +87,8 @@ class Game {
 
     for (final stone in activeStones) {
       double distance = sqrt(
-        pow(stone.x - sheet.goalAreaCenterWidth, 2) +
-            pow(stone.y - sheet.goalAreaCenterHeight, 2),
+        pow(stone.x! - sheet.goalAreaCenterWidth, 2) +
+            pow(stone.y! - sheet.goalAreaCenterHeight, 2),
       );
       if (stone.user == first) {
         if (firstClosest == null) {
@@ -124,7 +124,7 @@ class Game {
 }
 
 // Debugger:
-/*
+
 void main() {
   final test = Game(
     playerOne: const User(username: 'test', password: 'test'),
@@ -133,9 +133,10 @@ void main() {
 
   final estekivi = Stone(user: null, x: 4023.804789965249, y: 250);
   test.activeStones.add(estekivi);
+  estekivi.slide(0, 0);
 
   final kivi = test.stones.first;
   test.activeStones.add(kivi);
-  kivi.slide(0, 270);
+  // arvot [0, 40] kolisee
+  kivi.slide(40, 270);
 }
-*/

@@ -7,24 +7,25 @@ import 'package:uuid/uuid.dart';
 class Stone {
   /// Constructor
   // For debugging purposes use the following format:
-  //Stone({required this.user, required this.x, required this.y})
-  //    : id = Uuid().v4();
-  Stone({required this.user}) : id = const Uuid().v4();
+  Stone({required this.user, required this.x, required this.y})
+      : id = Uuid().v4();
+  //Stone({required this.user}) : id = const Uuid().v4();
   Sheet sheet = Sheet();
   User? user;
   final String? id;
   // actually 14.53cm, but client scales to 64x64 sprite
   static const double radius = 32;
   static const double mass = 19.96;
-  double x = 548.64;
-  double y = 250;
-  // double? x; // original: 548.64
-  // double? y; // original: 250
+  // double x = 548.64;
+  // double y = 250;
+  double? x; // original: 548.64
+  double? y; // original: 250
   double angle = 0.0;
   double velocity = 0.0;
   double velocityX = 0.0;
   double velocityY = 0.0;
   bool started = false;
+  String collisionLock = '';
 
   /// helper function to check if stone will collide during the next timestamp
   bool isGoingToCollideWithStone(Stone otherStone, double deltaTime) {
@@ -78,9 +79,15 @@ class Stone {
 
   /// magic
   void handleStoneCollisionBetter(Stone otherStone) {
-    final dx = otherStone.x - x;
-    final dy = otherStone.y - y;
+    final dx = otherStone.x! - x!;
+    final dy = otherStone.y! - y!;
     final collAngle = atan2(dy, dx);
+
+    print('Collision in angle : $collAngle');
+    print('Stone $id (this) old speed: $velocityX, $velocityY');
+    print(
+        'Stone ${otherStone.id} (other) old speed: ${otherStone.velocityX}, ${otherStone.velocityY}');
+
     final magnitude = sqrt(pow(velocityX, 2) + pow(velocityY, 2));
     final collVectorX = velocityX / magnitude;
     final collVectorY = velocityY / magnitude;
@@ -102,12 +109,58 @@ class Stone {
         (collVectorX * velocityX + collVectorY * velocityY);
     velocityX = thisNewVelocity * cos(thisNewAngle);
     velocityY = thisNewVelocity * sin(thisNewAngle);
-    x = x + velocityX;
-    y = y + velocityY;
+    x = x! + velocityX;
+    y = y! + velocityY;
+    velocity = thisNewVelocity;
+    angle = thisNewAngle;
     otherStone.velocityX = otherNewVelocity * cos(otherNewAngle);
     otherStone.velocityY = otherNewVelocity * sin(otherNewAngle);
-    otherStone.x = otherStone.x + otherStone.velocityX;
-    otherStone.y = otherStone.y + otherStone.velocityY;
+    otherStone.x = otherStone.x! + otherStone.velocityX;
+    otherStone.y = otherStone.y! + otherStone.velocityY;
+    otherStone.velocity = thisNewVelocity;
+    otherStone.angle = otherNewAngle;
+    print('Stone $id (this) new speed: $velocityX, $velocityY');
+    print(
+        'Stone ${otherStone.id} (other) new speed: ${otherStone.velocityX}, ${otherStone.velocityY}');
+    print('Collision between $id and ${otherStone.id} handled.');
+    print('');
+    print('');
+  }
+
+  void handleStoneCollisionWithVelocities(Stone otherStone) {
+    print('Collision detected between $id and ${otherStone.id}');
+    print('Stone $id (this) old speed: $velocityX, $velocityY');
+    print(
+        'Stone ${otherStone.id} (other) old speed: ${otherStone.velocityX}, ${otherStone.velocityY}');
+
+    final relVelX = velocityX - otherStone.velocityX;
+    final relVelY = velocityY - otherStone.velocityY;
+    final magnitude = sqrt(pow(relVelX, 2) + pow(relVelY, 2));
+    final collX = relVelX / magnitude;
+    final collY = relVelY / magnitude;
+    final thisNewScalarVel = 2 * relVelX * collX + relVelY * collY;
+    final thisNewVelocityX = collX * thisNewScalarVel;
+    final thisNewVelocityY = collY * thisNewScalarVel;
+    final thisNewAngle = (collX * relVelY - collY * relVelX) /
+        (collX * relVelX + collY * relVelY);
+    final otherNewScalarVel = 2 * relVelX * (-collX) + relVelY * (-collY);
+    final otherNewVelocityX = -collX * otherNewScalarVel;
+    final otherNewVelocityY = -collY * otherNewScalarVel;
+    final otherNewAngle = ((-collX * relVelY) - (-collY * relVelX)) /
+        ((-collX * relVelX) + (-collY * relVelY));
+
+    velocityX = thisNewVelocityX;
+    velocityY = thisNewVelocityY;
+    x = x! + velocityX;
+    y = y! + velocityY;
+    otherStone.velocityX = otherNewVelocityX;
+    otherStone.velocityY = otherNewVelocityY;
+    otherStone.x = otherStone.x! + otherStone.velocityX;
+    otherStone.y = otherStone.y! + otherStone.velocityY;
+
+    print('Stone $id (this) new speed: $velocityX, $velocityY');
+    print(
+        'Stone ${otherStone.id} (other) new speed: ${otherStone.velocityX}, ${otherStone.velocityY}');
   }
 
   /// checks if the stone is within boundaries and fixes pos & vel if needed
@@ -144,9 +197,6 @@ class Stone {
 
   /// low-quality phys engine by tikibeni (SheetPhysX)
   void update(double deltaTime, List<Stone> activeStones) {
-    // Problems:
-    // - collision almost always results in both zero velocities
-    // - sometimes collision throws the stone in totally random direction
     double dragX;
     double dragY;
 
@@ -183,13 +233,20 @@ class Stone {
       for (final otherStone in activeStones) {
         if (otherStone != this &&
             isGoingToCollideWithStone(otherStone, deltaTime)) {
-          handleStoneCollisionBetter(otherStone);
+          handleStoneCollisionWithVelocities(otherStone);
         }
       }
+      x = x! + velocityX;
+      y = y! + velocityY;
+      print('$id moving to $x, $y');
+      print('$id velocity: $velocityX, $velocityY');
+      print('');
+      print('');
     } else {
       velocity = 0.0; // do NOT remove this.
+      print('$id stopped.');
+      print('');
+      print('');
     }
-    x = x! + velocityX;
-    y = y! + velocityY;
   }
 }
