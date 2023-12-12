@@ -149,10 +149,6 @@ class Stone {
 
     velocityX = thisNewVelocityX;
     velocityY = thisNewVelocityY;
-    x = x! + velocityX;
-    y = y! + velocityY;
-    //print('Stone THIS new speed: $velocityX, $velocityY');
-    //print('Moving THIS to $x, $y');
     otherStone.velocityX = otherNewVelocityX;
     otherStone.velocityY = otherNewVelocityY;
     otherStone.x = otherStone.x! + otherStone.velocityX;
@@ -230,11 +226,10 @@ class Stone {
       for (final otherStone in activeStones) {
         if (otherStone != this) {
           final willCollide = isGoingToCollideWithStone(otherStone, deltaTime);
-          if (willCollide && !collisionLocks.contains(otherStone.id)) {
+          if (willCollide && !otherStone.collisionLocks.contains(id)) {
             handleStoneCollisionWithVelocities(otherStone);
           } else if (!willCollide && collisionLocks.contains(otherStone.id)) {
             collisionLocks.remove(otherStone.id);
-            otherStone.collisionLocks.remove(id);
           }
         }
       }
