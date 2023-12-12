@@ -130,8 +130,10 @@ void main() {
     playerTwo: const User(username: 'test1', password: 'test2'),
   );
 
-  final estekivi = Stone(user: null, x: 4023.804789965249, y: 250);
-  final estekivi1 = Stone(user: null, x: 4060.2772, y: 213.887);
+  //final estekivi = Stone(user: null, x: 4023.804789965249, y: 250);
+  //final estekivi1 = Stone(user: null, x: 4060.2772, y: 213.887);
+  final estekivi = Stone(user: null, x: 3500, y: 250);
+  final estekivi1 = Stone(user: null, x: 3564, y: 250); // peräkkäiset
   test.activeStones.add(estekivi);
   estekivi.slide(0, 0);
   test.activeStones.add(estekivi1);
@@ -140,6 +142,6 @@ void main() {
   final kivi = test.stones.first;
   test.activeStones.add(kivi);
   // arvot [0, 40] kolisee
-  kivi.slide(40, 270);
+  kivi.slide(0, 80);
 }
 */

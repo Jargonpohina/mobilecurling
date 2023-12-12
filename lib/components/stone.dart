@@ -40,7 +40,7 @@ class Stone {
     return distance < 2 * radius; // radius + otherStone.radius
   }
 
-  /// phys function to handle collisions between stones
+  /// v1
   void handleStoneCollision(Stone otherStone) {
     /// difference between stones' x-coords
     final dx = otherStone.x! - x!;
@@ -76,7 +76,7 @@ class Stone {
     otherStone.y = otherStone.y! + otherStone.velocityY;
   }
 
-  /// magic
+  /// v2
   void handleStoneCollisionBetter(Stone otherStone) {
     collisionLocks.add(otherStone.id);
     otherStone.collisionLocks.add(id);
@@ -126,17 +126,17 @@ class Stone {
     print('');
   }
 
+  /// v3
   void handleStoneCollisionWithVelocities(Stone otherStone) {
     // TODO: Käsittele kimpoaminen seinästä tai tilanne jossa kiinni seinässä
     // ja kimpoaa
     // TODO: Käsittele tilanne, jossa kolahdetaan useamman kuin yhden jonoon
     collisionLocks.add(otherStone.id);
-    /*
-    print('Collision detected between $id (THIS) and ${otherStone.id} (OTHER)');
-    print('Stone THIS old speed: $velocityX, $velocityY');
-    print(
-        'Stone OTHER old speed: ${otherStone.velocityX}, ${otherStone.velocityY}');
-    */
+
+    //print('Collision detected between $id (THIS) and ${otherStone.id} (OTHER)');
+    //print('Stone THIS old speed: $velocityX, $velocityY');
+    //print(
+    //    'Stone OTHER old speed: ${otherStone.velocityX}, ${otherStone.velocityY}');
 
     final relVelX = velocityX - otherStone.velocityX;
     final relVelY = velocityY - otherStone.velocityY;
@@ -157,13 +157,16 @@ class Stone {
     //print('Stone THIS new speed: $velocityX, $velocityY}');
     otherStone.velocityX = otherNewVelocityX;
     otherStone.velocityY = otherNewVelocityY;
-    //otherStone.x = otherStone.x! + otherStone.velocityX;
-    //otherStone.y = otherStone.y! + otherStone.velocityY;
-    /*
-    print(
-        'Stone OTHER new speed: ${otherStone.velocityX}, ${otherStone.velocityY}');
-    print('Moving OTHER to ${otherStone.x}, ${otherStone.y}');
-    */
+    otherStone.x = otherStone.x! + otherStone.velocityX;
+    otherStone.y = otherStone.y! + otherStone.velocityY;
+    otherStone.checkBoundaries();
+
+    collisionLocks.remove(otherStone.id);
+    //print(
+    //    'Stone OTHER new speed: ${otherStone.velocityX}, ${otherStone.velocityY}');
+    //print('Moving OTHER to ${otherStone.x}, ${otherStone.y}');
+    //print('');
+    //print('');
   }
 
   /// checks if the stone is within boundaries and fixes pos & vel if needed
@@ -240,7 +243,6 @@ class Stone {
         if (otherStone != this) {
           final willCollide = isGoingToCollideWithStone(otherStone, deltaTime);
           final otherLocked = otherStone.collisionLocks.contains(id);
-          final thisLocked = collisionLocks.contains(otherStone.id);
 
           /*
           if (otherLocked) {
@@ -253,19 +255,16 @@ class Stone {
 
           if (willCollide && !otherLocked) {
             handleStoneCollisionWithVelocities(otherStone);
-          } else if (!willCollide && thisLocked) {
-            collisionLocks.remove(otherStone.id);
           }
         }
       }
       x = x! + velocityX;
       y = y! + velocityY;
-      /*
-      print('$id moving to $x, $y');
-      print('$id velocity: $velocityX, $velocityY');
-      print('');
-      print('');
-      */
+
+      //print('$id moving to $x, $y');
+      //print('$id velocity: $velocityX, $velocityY');
+      //print('');
+      //print('');
     } else {
       velocity = 0.0; // do NOT remove this.
     }
