@@ -25,7 +25,7 @@ class Stone {
   double velocityX = 0.0;
   double velocityY = 0.0;
   bool started = false;
-  String collisionLock = '';
+  List<String> collisionLocks = [];
 
   /// helper function to check if stone will collide during the next timestamp
   bool isGoingToCollideWithStone(Stone otherStone, double deltaTime) {
@@ -79,6 +79,8 @@ class Stone {
 
   /// magic
   void handleStoneCollisionBetter(Stone otherStone) {
+    collisionLocks.add(otherStone.id);
+    otherStone.collisionLocks.add(id);
     final dx = otherStone.x! - x!;
     final dy = otherStone.y! - y!;
     final collAngle = atan2(dy, dx);
@@ -128,8 +130,8 @@ class Stone {
   }
 
   void handleStoneCollisionWithVelocities(Stone otherStone) {
-    collisionLock = otherStone.id;
-    otherStone.collisionLock = id;
+    collisionLocks.add(otherStone.id);
+    otherStone.collisionLocks.add(id);
     print('Collision detected between $id and ${otherStone.id}');
     print('Stone $id (this) old speed: $velocityX, $velocityY');
     print(
@@ -140,12 +142,12 @@ class Stone {
     final magnitude = sqrt(pow(relVelX, 2) + pow(relVelY, 2));
     final collX = relVelX / magnitude;
     final collY = relVelY / magnitude;
-    final thisNewScalarVel = 2 * relVelX * collX + relVelY * collY;
+    final thisNewScalarVel = 0.5 * relVelX * collX + relVelY * collY;
     final thisNewVelocityX = collX * thisNewScalarVel;
     final thisNewVelocityY = collY * thisNewScalarVel;
     final thisNewAngle = (collX * relVelY - collY * relVelX) /
         (collX * relVelX + collY * relVelY);
-    final otherNewScalarVel = 2 * relVelX * (-collX) + relVelY * (-collY);
+    final otherNewScalarVel = 0.5 * relVelX * (-collX) + relVelY * (-collY);
     final otherNewVelocityX = -collX * otherNewScalarVel;
     final otherNewVelocityY = -collY * otherNewScalarVel;
     final otherNewAngle = ((-collX * relVelY) - (-collY * relVelX)) /
@@ -234,12 +236,13 @@ class Stone {
       checkBoundaries();
       for (final otherStone in activeStones) {
         if (otherStone != this) {
-          bool willCollide = isGoingToCollideWithStone(otherStone, deltaTime);
-          if (willCollide && collisionLock != otherStone.id) {
+          final willCollide = isGoingToCollideWithStone(otherStone, deltaTime);
+          if (willCollide && !collisionLocks.contains(otherStone.id)) {
+            // handleStoneCollisionBetter(otherStone);
             handleStoneCollisionWithVelocities(otherStone);
-          } else if (!willCollide && collisionLock == otherStone.id) {
-            collisionLock = '';
-            otherStone.collisionLock = '';
+          } else if (!willCollide && collisionLocks.contains(otherStone.id)) {
+            collisionLocks.remove(otherStone.id);
+            otherStone.collisionLocks.remove(id);
           }
         }
       }
