@@ -7,7 +7,7 @@ import 'package:uuid/uuid.dart';
 class Stone {
   /// Constructor
   // For debugging purposes use the following format:
-  // Stone({required this.user, required this.x, required this.y})
+  //Stone({required this.user, required this.x, required this.y})
   //    : id = Uuid().v4();
   Stone({required this.user}) : id = const Uuid().v4();
   Sheet sheet = Sheet();
@@ -127,11 +127,16 @@ class Stone {
   }
 
   void handleStoneCollisionWithVelocities(Stone otherStone) {
+    // TODO: Käsittele kimpoaminen seinästä tai tilanne jossa kiinni seinässä
+    // ja kimpoaa
+    // TODO: Käsittele tilanne, jossa kolahdetaan useamman kuin yhden jonoon
     collisionLocks.add(otherStone.id);
-    otherStone.collisionLocks.add(id);
-    //print('Collision detected between $id (THIS) and ${otherStone.id} (OTHER)');
-    //print('Stone THIS old speed: $velocityX, $velocityY');
-    //print()'Stone OTHER old speed: ${otherStone.velocityX}, ${otherStone.velocityY}');
+    /*
+    print('Collision detected between $id (THIS) and ${otherStone.id} (OTHER)');
+    print('Stone THIS old speed: $velocityX, $velocityY');
+    print(
+        'Stone OTHER old speed: ${otherStone.velocityX}, ${otherStone.velocityY}');
+    */
 
     final relVelX = velocityX - otherStone.velocityX;
     final relVelY = velocityY - otherStone.velocityY;
@@ -149,29 +154,37 @@ class Stone {
 
     velocityX = thisNewVelocityX;
     velocityY = thisNewVelocityY;
+    //print('Stone THIS new speed: $velocityX, $velocityY}');
     otherStone.velocityX = otherNewVelocityX;
     otherStone.velocityY = otherNewVelocityY;
-    otherStone.x = otherStone.x! + otherStone.velocityX;
-    otherStone.y = otherStone.y! + otherStone.velocityY;
-    //print('Stone OTHER new speed: ${otherStone.velocityX}, ${otherStone.velocityY}');
-    //print('Moving OTHER to ${otherStone.x}, ${otherStone.y}');
+    //otherStone.x = otherStone.x! + otherStone.velocityX;
+    //otherStone.y = otherStone.y! + otherStone.velocityY;
+    /*
+    print(
+        'Stone OTHER new speed: ${otherStone.velocityX}, ${otherStone.velocityY}');
+    print('Moving OTHER to ${otherStone.x}, ${otherStone.y}');
+    */
   }
 
   /// checks if the stone is within boundaries and fixes pos & vel if needed
   void checkBoundaries() {
     if (x! - radius < sheet.left) {
+      //print('$id hit the left wall!');
       x = radius;
       velocityX = -velocityX;
     }
     if (x! + radius > sheet.right) {
+      //print('$id hit the right wall!');
       x = sheet.right - radius;
       velocityX = -velocityX;
     }
     if (y! - radius < sheet.top) {
+      //print('$id hit the top wall!');
       y = radius;
       velocityY = -velocityY;
     }
     if (y! + radius > sheet.bottom) {
+      //print('$id hit the bottom wall!');
       y = sheet.bottom - radius;
       velocityY = -velocityY;
     }
@@ -226,19 +239,33 @@ class Stone {
       for (final otherStone in activeStones) {
         if (otherStone != this) {
           final willCollide = isGoingToCollideWithStone(otherStone, deltaTime);
-          if (willCollide && !otherStone.collisionLocks.contains(id)) {
+          final otherLocked = otherStone.collisionLocks.contains(id);
+          final thisLocked = collisionLocks.contains(otherStone.id);
+
+          /*
+          if (otherLocked) {
+            print('$id (THIS) otherlocked by: ${otherStone.id}');
+          }
+          if (thisLocked) {
+            print('OTHER ${otherStone.id} is locked locally.');
+          }
+          */
+
+          if (willCollide && !otherLocked) {
             handleStoneCollisionWithVelocities(otherStone);
-          } else if (!willCollide && collisionLocks.contains(otherStone.id)) {
+          } else if (!willCollide && thisLocked) {
             collisionLocks.remove(otherStone.id);
           }
         }
       }
       x = x! + velocityX;
       y = y! + velocityY;
-      //print('$id moving to $x, $y');
-      //print('$id velocity: $velocityX, $velocityY');
-      //print('');
-      //print('');
+      /*
+      print('$id moving to $x, $y');
+      print('$id velocity: $velocityX, $velocityY');
+      print('');
+      print('');
+      */
     } else {
       velocity = 0.0; // do NOT remove this.
     }
