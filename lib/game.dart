@@ -1,3 +1,5 @@
+// ignore_for_file: lines_longer_than_80_chars
+
 import 'dart:async';
 import 'dart:math';
 import 'package:mobilecurling/components/sheet.dart';
@@ -6,6 +8,15 @@ import 'package:mobilecurling/core/shared_classes/user/user.dart';
 
 /// Game tick logic implementation
 class Game {
+  /// Creating the game instance
+  Game({required User playerOne, required User playerTwo}) {
+    initUsers(playerOne: playerOne, playerTwo: playerTwo);
+    initStones();
+    // start the tick system
+    _timer =
+        Timer.periodic(Duration(milliseconds: frameDuration.toInt()), _update);
+  }
+
   /// List for the stones in the game
   List<Stone> stones = [];
 
@@ -15,29 +26,21 @@ class Game {
   /// List for the users in the game
   List<User> users = [];
 
+  /// Playable area of the game
   Sheet sheet = Sheet();
 
-  /// Creating the game instance
-  Game({required User playerOne, required User playerTwo}) {
-    initUsers(playerOne: playerOne, playerTwo: playerTwo);
-    initStones();
-
-    // start the tick system
-    _timer =
-        Timer.periodic(Duration(milliseconds: frameDuration.toInt()), _update);
-  }
-
-  // Tick system for the game:
   /// fps of the game
   static const double desiredFps = 60;
+
+  /// duration of a single frame in milliseconds
   static const double frameDuration = 1000 / desiredFps;
 
   late Timer _timer;
   DateTime _lastFrameTime = DateTime.now();
 
   void _update(Timer timer) {
-    final DateTime currentTime = DateTime.now();
-    final double deltaTime =
+    final currentTime = DateTime.now();
+    final deltaTime =
         currentTime.difference(_lastFrameTime).inMilliseconds / 1000.0; // sec
 
     update(deltaTime);
@@ -52,9 +55,8 @@ class Game {
 
   /// initialize both players with four stones
   void initStones() {
-    for (User user in users) {
-      for (int i = 0; i < 4; i++) {
-        //stones.add(Stone(user: user, x: 548.64, y: 250));
+    for (final user in users) {
+      for (var i = 0; i < 4; i++) {
         stones.add(Stone(user: user));
       }
     }
@@ -79,16 +81,14 @@ class Game {
 
   /// calculating the winner
   User? winner() {
-    User first = users.first;
-    User second = users.last;
-    double? firstClosest = null;
-    double? secondClosest = null;
+    final first = users.first;
+    final second = users.last;
+    double? firstClosest;
+    double? secondClosest;
 
     for (final stone in activeStones) {
-      double distance = sqrt(
-        pow(stone.x! - sheet.goalAreaCenterWidth, 2) +
-            pow(stone.y! - sheet.goalAreaCenterHeight, 2),
-      );
+      final distance = sqrt(pow(stone.x - sheet.goalAreaCenterWidth, 2) +
+          pow(stone.y - sheet.goalAreaCenterHeight, 2));
       if (stone.user == first) {
         if (firstClosest == null) {
           firstClosest = distance;
@@ -121,27 +121,3 @@ class Game {
     _timer.cancel();
   }
 }
-
-// Debugger:
-/*
-void main() {
-  final test = Game(
-    playerOne: const User(username: 'test', password: 'test'),
-    playerTwo: const User(username: 'test1', password: 'test2'),
-  );
-
-  //final estekivi = Stone(user: null, x: 4023.804789965249, y: 250);
-  //final estekivi1 = Stone(user: null, x: 4060.2772, y: 213.887);
-  final estekivi = Stone(user: null, x: 3500, y: 250);
-  final estekivi1 = Stone(user: null, x: 3564, y: 250); // peräkkäiset
-  test.activeStones.add(estekivi);
-  estekivi.slide(0, 0);
-  test.activeStones.add(estekivi1);
-  estekivi1.slide(0, 0);
-
-  final kivi = test.stones.first;
-  test.activeStones.add(kivi);
-  // arvot [0, 40] kolisee
-  kivi.slide(0, 80);
-}
-*/

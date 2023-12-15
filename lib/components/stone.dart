@@ -1,3 +1,5 @@
+// ignore_for_file: flutter_style_todos, lines_longer_than_80_chars
+
 import 'dart:math';
 import 'package:mobilecurling/components/sheet.dart';
 import 'package:mobilecurling/core/shared_classes/user/user.dart';
@@ -6,137 +8,61 @@ import 'package:uuid/uuid.dart';
 /// Curling stone object
 class Stone {
   /// Constructor
-  // For debugging purposes use the following format:
-  //Stone({required this.user, required this.x, required this.y})
-  //    : id = Uuid().v4();
   Stone({required this.user}) : id = const Uuid().v4();
+
+  /// The game area
   Sheet sheet = Sheet();
+
+  /// User of the stone
   User? user;
+
+  /// UUIDv4 of the stone
   final String id;
-  // actually 14.53cm, but client scales to 64x64 sprite
+
+  /// Radius (cm) of the stone. Should actually be 14.53cm, but client scales to 64x64 sprite
   static const double radius = 32;
+
+  /// Mass of the stone in kilograms for drag calculation
   static const double mass = 19.96;
+
+  /// Initial x-coordinate
   double x = 548.64;
+
+  /// Initial y-coordinate
   double y = 250;
-  //double? x; // original: 548.64
-  //double? y; // original: 250
-  double velocity = 0.0;
-  double velocityX = 0.0;
-  double velocityY = 0.0;
+
+  /// Overall velocity vector
+  double velocity = 0;
+
+  /// Horizontal component of the velocity
+  double velocityX = 0;
+
+  /// Vertical component of the velocity
+  double velocityY = 0;
+
+  /// Has the slide function fired on the stone
   bool started = false;
+
+  /// For the lock mechanism of the stone collisions
   List<String> collisionLocks = [];
 
-  /// helper function to check if stone will collide during the next timestamp
+  /// helper function to check if stone will collide during the next step
   bool isGoingToCollideWithStone(Stone otherStone, double deltaTime) {
-    double futureX = x! + velocityX * deltaTime;
-    double futureY = y! + velocityY * deltaTime;
+    final futureX = x + velocityX * deltaTime;
+    final futureY = y + velocityY * deltaTime;
 
-    double otherFutureX = otherStone.x! + otherStone.velocityX * deltaTime;
-    double otherFutureY = otherStone.y! + otherStone.velocityY * deltaTime;
+    final otherFutureX = otherStone.x + otherStone.velocityX * deltaTime;
+    final otherFutureY = otherStone.y + otherStone.velocityY * deltaTime;
 
-    double distance =
+    final distance =
         sqrt(pow(futureX - otherFutureX, 2) + pow(futureY - otherFutureY, 2));
 
-    return distance < 2 * radius; // radius + otherStone.radius
+    return distance < 2 * radius; // less than radius + otherStone.radius
   }
 
-  /// v1
-  void handleStoneCollision(Stone otherStone) {
-    /// difference between stones' x-coords
-    final dx = otherStone.x! - x!;
-
-    /// difference between stones' y-coords
-    final dy = otherStone.y! - y!;
-
-    /// collision angle based on coord differences
-    final collAngle = atan2(dy, dx);
-
-    final thisvelocity = sqrt(pow(velocityX, 2) + pow(velocityY, 2));
-    //final othervelocity = sqrt(pow(otherStone.velocityX, 2) + pow(otherStone.velocityY, 2));
-
-    //final thisDirection = atan2(velocityY, velocityX);
-    //final otherDirection = atan2(otherStone.velocityY, otherStone.velocityX);
-    final otherDirection = atan2(velocityY, velocityX);
-
-    // velocitys after collision as they have same masses
-    final thisNewvelocity = 0.0; // this is actually zero
-    final otherNewvelocity = thisvelocity;
-
-    //velocityX = thisNewvelocity * cos(thisDirection - collAngle);
-    //velocityY = thisNewvelocity * sin(thisDirection - collAngle);
-    velocityX = 0.0;
-    velocityY = 0.0;
-
-    otherStone.velocityX = otherNewvelocity * cos(otherDirection - collAngle);
-    otherStone.velocityY = otherNewvelocity * sin(otherDirection - collAngle);
-
-    // we nudge the collided stone a bit away to avoid collision loop with
-    // the initial stone
-    otherStone.x = otherStone.x! + otherStone.velocityX;
-    otherStone.y = otherStone.y! + otherStone.velocityY;
-  }
-
-  /// v2
-  void handleStoneCollisionBetter(Stone otherStone) {
-    collisionLocks.add(otherStone.id);
-    otherStone.collisionLocks.add(id);
-    final dx = otherStone.x! - x!;
-    final dy = otherStone.y! - y!;
-    final collAngle = atan2(dy, dx);
-
-    print('Collision in angle : $collAngle');
-    print('Stone $id (this) old speed: $velocityX, $velocityY');
-    print(
-        'Stone ${otherStone.id} (other) old speed: ${otherStone.velocityX}, ${otherStone.velocityY}');
-
-    final magnitude = sqrt(pow(velocityX, 2) + pow(velocityY, 2));
-    final collVectorX = velocityX / magnitude;
-    final collVectorY = velocityY / magnitude;
-    final thisNewVelocity = ((velocityX - otherStone.velocityX) * collVectorX +
-            (velocityY - otherStone.velocityY) * collVectorY) /
-        cos(collAngle);
-    final thisNewAngle = (collVectorX * (velocityY - otherStone.velocityY) -
-            collVectorY * (velocityX - otherStone.velocityX)) /
-        (collVectorX * (velocityX - otherStone.velocityX) +
-            collVectorY * (velocityY - otherStone.velocityY));
-    final otherNewVelocity = 2 *
-            ((velocityX * collVectorX + velocityY * collVectorY) /
-                cos(collAngle)) *
-            collVectorX +
-        ((velocityX * collVectorX + velocityY * collVectorY) / cos(collAngle)) *
-            collVectorY -
-        magnitude;
-    final otherNewAngle = (collVectorX * velocityY - collVectorY * velocityX) /
-        (collVectorX * velocityX + collVectorY * velocityY);
-    velocityX = thisNewVelocity * cos(thisNewAngle);
-    velocityY = thisNewVelocity * sin(thisNewAngle);
-    x = x! + velocityX;
-    y = y! + velocityY;
-    velocity = thisNewVelocity;
-    otherStone.velocityX = otherNewVelocity * cos(otherNewAngle);
-    otherStone.velocityY = otherNewVelocity * sin(otherNewAngle);
-    otherStone.x = otherStone.x! + otherStone.velocityX;
-    otherStone.y = otherStone.y! + otherStone.velocityY;
-    otherStone.velocity = thisNewVelocity;
-    print('Stone $id (this) new speed: $velocityX, $velocityY');
-    print(
-        'Stone ${otherStone.id} (other) new speed: ${otherStone.velocityX}, ${otherStone.velocityY}');
-    print('Collision between $id and ${otherStone.id} handled.');
-    print('');
-    print('');
-  }
-
-  /// v3
+  /// calculates collision
   void handleStoneCollisionWithVelocities(Stone otherStone) {
-    // TODO: Käsittele kimpoaminen seinästä tai tilanne jossa kiinni seinässä
-    // ja kimpoaa
-    // TODO: Käsittele tilanne, jossa kolahdetaan useamman kuin yhden jonoon
     collisionLocks.add(otherStone.id);
-
-    //print('Collision detected between $id (THIS) and ${otherStone.id} (OTHER)');
-    //print('Stone THIS old speed: $velocityX, $velocityY');
-    //print(
-    //    'Stone OTHER old speed: ${otherStone.velocityX}, ${otherStone.velocityY}');
 
     final relVelX = velocityX - otherStone.velocityX;
     final relVelY = velocityY - otherStone.velocityY;
@@ -154,58 +80,71 @@ class Stone {
 
     velocityX = thisNewVelocityX;
     velocityY = thisNewVelocityY;
-    //print('Stone THIS new speed: $velocityX, $velocityY}');
-    otherStone.velocityX = otherNewVelocityX;
-    otherStone.velocityY = otherNewVelocityY;
-    otherStone.x = otherStone.x! + otherStone.velocityX;
-    otherStone.y = otherStone.y! + otherStone.velocityY;
-    otherStone.checkBoundaries();
+
+    otherStone
+      ..velocityX = otherNewVelocityX
+      ..velocityY = otherNewVelocityY
+      ..x = otherStone.x + otherStone.velocityX
+      ..y = otherStone.y + otherStone.velocityY
+      ..checkBoundaries();
 
     collisionLocks.remove(otherStone.id);
-    //print(
-    //    'Stone OTHER new speed: ${otherStone.velocityX}, ${otherStone.velocityY}');
-    //print('Moving OTHER to ${otherStone.x}, ${otherStone.y}');
-    //print('');
-    //print('');
+  }
+
+  /// checks if velocity vectors should be zeroed to make simulation end
+  void isItTimeToStop() {
+    if (velocityX.abs() < 0.05) {
+      velocityX = 0.0;
+    }
+
+    if (velocityY.abs() < 0.05) {
+      velocityY = 0.0;
+    }
+  }
+
+  /// checks the conditions for stone movement and acts accordingly
+  void handleMovement(List<Stone> activeStones, double deltaTime) {
+    if (velocityX > 0.0 || velocityY > 0.0) {
+      checkBoundaries();
+      for (final otherStone in activeStones) {
+        if (otherStone != this) {
+          final willCollide = isGoingToCollideWithStone(otherStone, deltaTime);
+          final otherLocked = otherStone.collisionLocks.contains(id);
+
+          if (willCollide && !otherLocked) {
+            handleStoneCollisionWithVelocities(otherStone);
+          }
+        }
+      }
+      x = x + velocityX;
+      y = y + velocityY;
+    } else {
+      velocity = 0.0;
+    }
   }
 
   /// checks if the stone is within boundaries and fixes pos & vel if needed
   void checkBoundaries() {
-    if (x! - radius < sheet.left) {
-      //print('$id hit the left wall!');
+    if (x - radius < sheet.left) {
       x = radius;
       velocityX = -velocityX;
     }
-    if (x! + radius > sheet.right) {
-      //print('$id hit the right wall!');
+    if (x + radius > sheet.right) {
       x = sheet.right - radius;
       velocityX = -velocityX;
     }
-    if (y! - radius < sheet.top) {
-      //print('$id hit the top wall!');
+    if (y - radius < sheet.top) {
       y = radius;
       velocityY = -velocityY;
     }
-    if (y! + radius > sheet.bottom) {
-      //print('$id hit the bottom wall!');
+    if (y + radius > sheet.bottom) {
       y = sheet.bottom - radius;
       velocityY = -velocityY;
     }
   }
 
-  /// initialize the current stone
-  void slide(double angle, double velocity) {
-    this.velocity = velocity;
-    double radians = angle * (pi / 180);
-    if (!started) {
-      started = true;
-      velocityX = velocity * cos(radians);
-      velocityY = velocity * sin(radians);
-    }
-  }
-
-  /// low-quality phys engine by tikibeni (SheetPhysX)
-  void update(double deltaTime, List<Stone> activeStones) {
+  /// calculates the drag effect on stone movement
+  void handleDrag() {
     double dragX;
     double dragY;
 
@@ -228,45 +167,23 @@ class Stone {
         velocityY -= dragY;
       }
     }
+  }
 
-    if (velocityX.abs() < 0.05) {
-      velocityX = 0.0;
-    }
+  /// low-quality and handcrafted physengine (SheetPhysX) by tikibeni
+  void update(double deltaTime, List<Stone> activeStones) {
+    handleDrag();
+    isItTimeToStop();
+    handleMovement(activeStones, deltaTime);
+  }
 
-    if (velocityY.abs() < 0.05) {
-      velocityY = 0.0;
-    }
-
-    if (velocityX > 0.0 || velocityY > 0.0) {
-      checkBoundaries();
-      for (final otherStone in activeStones) {
-        if (otherStone != this) {
-          final willCollide = isGoingToCollideWithStone(otherStone, deltaTime);
-          final otherLocked = otherStone.collisionLocks.contains(id);
-
-          /*
-          if (otherLocked) {
-            print('$id (THIS) otherlocked by: ${otherStone.id}');
-          }
-          if (thisLocked) {
-            print('OTHER ${otherStone.id} is locked locally.');
-          }
-          */
-
-          if (willCollide && !otherLocked) {
-            handleStoneCollisionWithVelocities(otherStone);
-          }
-        }
-      }
-      x = x! + velocityX;
-      y = y! + velocityY;
-
-      //print('$id moving to $x, $y');
-      //print('$id velocity: $velocityX, $velocityY');
-      //print('');
-      //print('');
-    } else {
-      velocity = 0.0; // do NOT remove this.
+  /// initialize the stone values
+  void slide(double angle, double velocity) {
+    this.velocity = velocity;
+    final radians = angle * (pi / 180);
+    if (!started) {
+      started = true;
+      velocityX = velocity * cos(radians);
+      velocityY = velocity * sin(radians);
     }
   }
 }

@@ -1,5 +1,5 @@
 name: mobilecurling
-description: An new Dart Frog application
+description: A simple curling game which works on mobile and browser.
 version: 1.0.0+1
 publish_to: none
 
