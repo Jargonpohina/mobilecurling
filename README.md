@@ -31,7 +31,7 @@ Game can be tested here:
 
 Check [documentation](/doc) for more detailed information.
 
-- [Design plan](/doc/groupBP_design_plan.pdf)
+- [Design plan](/doc/design_plan.pdf)
 - [Architecture](/doc/architecture.png)
 - [Working time](/doc/working_time.md)
 
