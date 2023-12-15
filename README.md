@@ -1,4 +1,4 @@
-# Mobile Curling Real-Time Server
+# Mobilecurling real-time server
 
 [![style: very good analysis][very_good_analysis_badge]][very_good_analysis_link]
 [![License: MIT][license_badge]][license_link]
@@ -40,7 +40,7 @@ Check [documentation](/doc) for more detailed information.
 ```sh
 ~$ git clone git@github.com:Jargonpohina/mobilecurling.git
 ~$ cd mobilecurling
-~/mobilecurling$
+~/mobilecurling$ dart pub get
 ```
 
 To run the project, you need to install [Dart Frog](https://dartfrog.vgv.dev/docs/overview), which itself requires 
