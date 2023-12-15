@@ -15,7 +15,11 @@ This is the real-time server node of the project.
 Also works as the primary documentation node
 regarding the course.
 
-Running here: https://rts-ic4hp354na-ew.a.run.app
+Server running here: https://rts-ic4hp354na-ew.a.run.app
+
+Game can be tested here:
+- https://mobilecurling.web.app/
+- https://curling.walkscape.app/
 
 ## Components of the application
 
